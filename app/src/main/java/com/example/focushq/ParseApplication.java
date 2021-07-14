@@ -22,16 +22,13 @@ public class ParseApplication extends Application {
         httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         builder.networkInterceptors().add(httpLoggingInterceptor);
 
+        //register parse model
+        ParseObject.registerSubclass(Post.class);
         Parse.initialize(new Parse.Configuration.Builder(this)
                 .applicationId("nCo2aQy2KujDF7vDA4L4yKNOHK4mOEI1Ft3BBa8d")
                 .clientKey("vAfAE9MhU6xuzKk2tebdnkU9JteRQnvht86yFbpP")
                 .server("https://parseapi.back4app.com")
                 .build()
         );
-
-        // New test creation of object below
-        ParseObject testObject = new ParseObject("TestObject");
-        testObject.put("foo", "bar");
-        testObject.saveInBackground();
     }
 }
