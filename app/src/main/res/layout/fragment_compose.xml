@@ -1,14 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragments.ComposeFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
 
-</FrameLayout>
+    <ImageView
+        android:id="@+id/ivImage"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        tools:src="@tools:sample/avatars" />
+
+    <Button
+        android:id="@+id/btnCaptureImage"
+        android:layout_width="62dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="false"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="216dp"
+        android:background="#1BABEC"
+        app:icon="@android:drawable/ic_menu_camera"
+        app:iconTint="#E9EBEC" />
+
+    <LinearLayout
+        android:layout_width="363dp"
+        android:layout_height="130dp"
+        android:layout_below="@+id/btnCaptureImage"
+        android:layout_alignParentStart="false"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/etLocationName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Location Name..." />
+
+        <EditText
+            android:id="@+id/etDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Description..." />
+
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/btnPublish"
+        android:layout_width="44dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="26dp"
+        android:layout_marginEnd="19dp"
+        android:layout_marginBottom="63dp"
+        android:background="#74B7EC"
+        android:src="@android:drawable/ic_menu_add"
+        app:tint="#1356DD" />
+
+</RelativeLayout>
