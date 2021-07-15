@@ -55,6 +55,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         private TextView tvUsername;
         private TextView tvCreatedAt;
         private TextView tvDescription;
+        private TextView tvLocationName;
         private ImageView ivImage;
         private ImageView ivProfileImage;
 
@@ -63,6 +64,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             tvUsername = itemView.findViewById(R.id.tvUsername);
             tvCreatedAt = itemView.findViewById(R.id.tvCreatedAt);
             tvDescription = itemView.findViewById(R.id.tvDescription);
+            tvLocationName = itemView.findViewById(R.id.tvLocationName);
             ivImage = itemView.findViewById(R.id.ivImage);
             ivProfileImage = itemView.findViewById(R.id.ivProfileImage);
             itemView.setOnClickListener(this);
@@ -73,6 +75,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             //bind the post data to the view elements
             tvDescription.setText(post.getDescription());
             tvUsername.setText(post.getUser().getUsername());
+            tvLocationName.setText(post.getLocationName());
 
             Date createdAt = post.getCreatedAt();
             String timeAgo = Post.calculateTimeAgo(createdAt);

@@ -36,10 +36,13 @@ import com.parse.ParseFile;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,7 +67,6 @@ public class ComposeFragment extends Fragment {
     private ImageView ivImage;
     private File photoFile;
     public String photoFileName = "photo.jpg";
-    private ArrayList<Object> photoPaths;
 
 
     public ComposeFragment() {
@@ -88,6 +90,8 @@ public class ComposeFragment extends Fragment {
         btnPublish = view.findViewById(R.id.btnPublish);
         btnCaptureImage = view.findViewById(R.id.btnCaptureImage);
         ivImage = view.findViewById(R.id.ivImage);
+
+//        photoFile = new File();
 
         btnCaptureImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -179,37 +183,62 @@ public class ComposeFragment extends Fragment {
                     InputStream is = getContext().getContentResolver().openInputStream(imageUri);
                     Bitmap bitmap = BitmapFactory.decodeStream(is);
                     bitmaps.add(bitmap);
+                    ivImage.setImageBitmap(bitmaps.get(0));
+                    //TODO: set the actual ivImage on the post to the selected image
+                    OutputStream os = new BufferedOutputStream(new FileOutputStream(photoFile));
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
+                    try {
+                        os.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
             }
-//            new Thread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    for (final Bitmap b : bitmaps) {
-//                        getContext().runOnUiThread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                ivImage.setImageBitmap(b);
-//                            }
-//                        });
-//
-//                        try {
-//                            Thread.sleep(3000);
-//                        } catch (InterruptedException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                }
-//            }).start();
         }
+    }
+
+    // Returns the File for a photo stored on disk given the fileName
+    public File getPhotoFileUri(String fileName) {
+        // Get safe storage directory for photos
+        // Use `getExternalFilesDir` on Context to access package-specific directories.
+        // This way, we don't need to request external read/write runtime permissions.
+        File mediaStorageDir = new File(getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), TAG);
+
+        // Create the storage directory if it does not exist
+        if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()){
+            Log.d(TAG, "failed to create directory");
+        }
+
+        // Return the file target for the photo based on filename
+        return new File(mediaStorageDir.getPath() + File.separator + fileName);
+    }
+
+    public Bitmap loadFromUri(Uri photoUri) {
+        Bitmap image = null;
+        try {
+            // check version of Android on device
+            if(Build.VERSION.SDK_INT > 27){
+                // on newer versions of Android, use the new decodeBitmap method
+                ImageDecoder.Source source = ImageDecoder.createSource(getContext().getContentResolver(), photoUri);
+                image = ImageDecoder.decodeBitmap(source);
+            } else {
+                // support older versions of Android by using getBitmap
+                image = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), photoUri);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return image;
     }
 
 
     private void savePost(String description, String locationName, ParseUser currentUser) {
         Post post = new Post();
         post.setDescription(description);
-        post.setImage(new ParseFile(photoFile));
+        post.setLocationName(locationName);
+       // post.setImage(new ParseFile(photoFile));
         post.setUser(currentUser);
         post.saveInBackground(new SaveCallback() {
             @Override
