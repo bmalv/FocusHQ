@@ -10,6 +10,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -42,6 +45,8 @@ public class ProfileFragment extends Fragment {
     private TextView tvUsername;
     private ImageView ivProfileImage;
 
+    private MenuItem logoutItem;
+
     public ProfileFragment() {
         // Required empty public constructor
     }
@@ -53,12 +58,14 @@ public class ProfileFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_profile, container, false);
     }
 
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable  Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         rvPosts = view.findViewById(R.id.rvPosts);
         tvUsername = view.findViewById(R.id.tvUsername);
         ivProfileImage = view.findViewById(R.id.ivProfileImage);
+//        logoutItem = view.findViewById(R.id.action_logout);
 
         postsList = new ArrayList<>();
         adapter = new PostsAdapter(getContext(), postsList);
@@ -73,6 +80,7 @@ public class ProfileFragment extends Fragment {
                     .circleCrop()
                     .into(ivProfileImage);
         }
+
 
         rvPosts.setAdapter(adapter);
         rvPosts.setLayoutManager(new GridLayoutManager(getContext(), 2));
@@ -103,4 +111,5 @@ public class ProfileFragment extends Fragment {
             }
         });
     }
+
 }
