@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageDecoder;
@@ -276,22 +277,36 @@ public class ComposeFragment extends Fragment {
         Post post = new Post();
         post.setDescription(description);
         post.setLocationName(locationName);
-        //FIXME:this line is why the post is not saving the image
-        post.setImage(new ParseFile(photoFile));
+      //  Log.d(TAG, "image uri: " + imageUris.get(0).getPath());
+        File file = new File(getPath(imageUris.get(0)));
+        ParseFile parseFile = new ParseFile(file);
+        post.setImage(parseFile);
         post.setUser(currentUser);
         post.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if(e != null){
-                    Log.e(TAG, "Error while saving", e);
-                    Toast.makeText(getContext(), "Error while saving", Toast.LENGTH_SHORT).show();
-                }
-                Log.i(TAG, "Post save was successful!");
-                etDescription.setText("");
-                //0 means the empty resource id
-                ivImage.setImageResource(0);
+        @Override
+        public void done(ParseException e) {
+            if(e != null){
+                Log.e(TAG, "Error while saving", e);
+                Toast.makeText(getContext(), "Error while saving", Toast.LENGTH_SHORT).show();
             }
+            Log.i(TAG, "Post save was successful!");
+            etDescription.setText("");
+            //0 means the empty resource id
+            ivImage.setImageResource(0);
+        }
         });
+    }
+
+
+    public String getPath(Uri uri) {
+        String[] projection = { MediaStore.Images.Media.DATA };
+        Cursor cursor = getContext().getContentResolver().query(uri, projection, null, null, null);
+        if (cursor == null) return null;
+        int column_index =             cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        String s = cursor.getString(column_index);
+        cursor.close();
+        return s;
     }
 
 

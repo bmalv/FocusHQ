@@ -65,7 +65,6 @@ public class ProfileFragment extends Fragment {
         rvPosts = view.findViewById(R.id.rvPosts);
         tvUsername = view.findViewById(R.id.tvUsername);
         ivProfileImage = view.findViewById(R.id.ivProfileImage);
-//        logoutItem = view.findViewById(R.id.action_logout);
 
         postsList = new ArrayList<>();
         adapter = new PostsAdapter(getContext(), postsList);
