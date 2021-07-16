@@ -4,10 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.ComposeFragment">
+    tools:context=".fragments.ComposeFragment"
+    android:background="@color/white">
 
 
-    <ImageView
+    <ImageSwitcher
         android:id="@+id/ivImage"
         android:layout_width="match_parent"
         android:layout_height="200dp"
@@ -61,5 +62,29 @@
         android:background="#74B7EC"
         android:src="@android:drawable/ic_menu_add"
         app:tint="#1356DD" />
+
+    <Button
+        android:id="@+id/btnPrev"
+        android:layout_width="63dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="217dp"
+        android:layout_marginEnd="87dp"
+        android:layout_toStartOf="@+id/btnCaptureImage"
+        app:icon="@android:drawable/ic_media_rew" />
+
+    <Button
+        android:id="@+id/btnNext"
+        android:layout_width="63dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="87dp"
+        android:layout_marginTop="217dp"
+        android:layout_marginEnd="25dp"
+        android:layout_toEndOf="@+id/btnCaptureImage"
+        app:icon="@android:drawable/ic_media_ff" />
 
 </RelativeLayout>

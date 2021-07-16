@@ -26,8 +26,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.Toast;
+import android.widget.ViewSwitcher;
 
 import com.example.focushq.Post;
 import com.example.focushq.R;
@@ -58,15 +60,23 @@ public class ComposeFragment extends Fragment {
 
     public static final String TAG = "ComposeFragment";
     // PICK_PHOTO_CODE is a constant integer
-    public final static int PICK_PHOTO_CODE = 1046;
+    public final static int PICK_PHOTO_CODE = 0;
 
     private Button btnCaptureImage;
     private ImageButton btnPublish;
     private EditText etDescription;
     private EditText etLocationName;
-    private ImageView ivImage;
+    private ImageSwitcher ivImage;
+    private Button btnPrev;
+    private Button btnNext;
     private File photoFile;
     public String photoFileName = "photo.jpg";
+
+    //store images
+    private ArrayList<Uri> imageUris;
+
+    //position of selected image
+    int index = 0;
 
 
     public ComposeFragment() {
@@ -90,8 +100,50 @@ public class ComposeFragment extends Fragment {
         btnPublish = view.findViewById(R.id.btnPublish);
         btnCaptureImage = view.findViewById(R.id.btnCaptureImage);
         ivImage = view.findViewById(R.id.ivImage);
+        btnPrev = view.findViewById(R.id.btnPrev);
+        btnNext = view.findViewById(R.id.btnNext);
 
-//        photoFile = new File();
+        photoFile = new File(photoFileName);
+        imageUris = new ArrayList<>();
+
+        //setting up image switcher
+        ivImage.setFactory(new ViewSwitcher.ViewFactory() {
+            @Override
+            public View makeView() {
+                ImageView imageView = new ImageView(getContext().getApplicationContext());
+                return imageView;
+            }
+        });
+
+        btnPrev.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //when clicked show previous image if any
+                if(index > 0){
+                    index--;
+                    //setting image switcher to previous image
+                    ivImage.setImageURI(imageUris.get(index));
+                }else{
+                    //no previous images
+                    Toast.makeText(getContext(), "No previous image!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        btnNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //when clicked show next image if any
+                if(index < imageUris.size()){
+                    index++;
+                    //setting image switcher to the next image
+                    ivImage.setImageURI(imageUris.get(index));
+                }else{
+                    //there are no more images to show
+                    Toast.makeText(getContext(), "No more images!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
         btnCaptureImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -131,15 +183,16 @@ public class ComposeFragment extends Fragment {
                     return;
                 }
 
-                //checking the photo
-                if(ivImage.getDrawable() == null){
-                     /*if getDrawable is null means the user is
-                    trying to submit a post without having an image data*/
-                    Toast.makeText(getContext(), "There is no image!", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+//                //checking the photo
+//                if(ivImage == null){
+//                     /*if getDrawable is null means the user is
+//                    trying to submit a post without having an image data*/
+//                    Toast.makeText(getContext(), "There is no image!", Toast.LENGTH_SHORT).show();
+//                    return;
+//                }
 
                 ParseUser currentUser = ParseUser.getCurrentUser();
+                //save the post to Parse fields
                 savePost(description, locationName, currentUser);
             }
         });
@@ -153,48 +206,33 @@ public class ComposeFragment extends Fragment {
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         //this will allow the user to pick any type of image
         intent.setType("image/*");
-        startActivityForResult(intent,1);
+        startActivityForResult(Intent.createChooser(intent,"Select Image(s)"), PICK_PHOTO_CODE);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable  Intent data) {
-        if(requestCode == 1 && resultCode == RESULT_OK){
-            List<Bitmap> bitmaps = new ArrayList<>();
-            ClipData clipData = data.getClipData();
 
+        if(requestCode == PICK_PHOTO_CODE && resultCode == RESULT_OK){
+            ClipData clipData = data.getClipData();
             if(clipData != null){
-                //user selected multiple images
-                Log.d(TAG, "user selected multiple images!");
+                //user picked multiple images
+                //iterate through images picked
                 for(int i = 0; i < clipData.getItemCount(); i++){
+                    //grab image at index
                     Uri imageUri = clipData.getItemAt(i).getUri();
-                    try {
-                        InputStream is = getContext().getContentResolver().openInputStream(imageUri);
-                        Bitmap bitmap = BitmapFactory.decodeStream(is);
-                        bitmaps.add(bitmap);
-                    } catch(FileNotFoundException e){
-                        e.printStackTrace();
-                    }
+                    //add image to list
+                    imageUris.add(imageUri);
                 }
+                //set first image picked to image switcher
+                ivImage.setImageURI(imageUris.get(0));
+                index = 0;
             }else{
-                //only one image was selected
-                Log.d(TAG, "user selected one image!");
+                //user picked a single image
                 Uri imageUri = data.getData();
-                try {
-                    InputStream is = getContext().getContentResolver().openInputStream(imageUri);
-                    Bitmap bitmap = BitmapFactory.decodeStream(is);
-                    bitmaps.add(bitmap);
-                    ivImage.setImageBitmap(bitmaps.get(0));
-                    //TODO: set the actual ivImage on the post to the selected image
-                    OutputStream os = new BufferedOutputStream(new FileOutputStream(photoFile));
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
-                    try {
-                        os.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
+                imageUris.add(imageUri);
+                //set image to image switcher
+                ivImage.setImageURI(imageUris.get(0));
+                index = 0;
             }
         }
     }
@@ -238,7 +276,8 @@ public class ComposeFragment extends Fragment {
         Post post = new Post();
         post.setDescription(description);
         post.setLocationName(locationName);
-       // post.setImage(new ParseFile(photoFile));
+        //FIXME:this line is why the post is not saving the image
+        post.setImage(new ParseFile(photoFile));
         post.setUser(currentUser);
         post.saveInBackground(new SaveCallback() {
             @Override
