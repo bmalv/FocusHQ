@@ -10,12 +10,21 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
 
 import org.parceler.Parcels;
 
-public class PostsDetailsActivity extends AppCompatActivity {
+public class PostsDetailsActivity extends AppCompatActivity implements OnMapReadyCallback {
+
+    private static final String MAPVIEW_BUNDLE_KEY = "MapViewBundleKey";
 
     //the post to display
     Post post;
@@ -26,11 +35,20 @@ public class PostsDetailsActivity extends AppCompatActivity {
     TextView tvLocationName;
     ImageView ivProfileImage;
     ImageView ivImage;
+    MapView mvMap;
+
+    //sdk client variable
+    PlacesClient placesClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_posts_details);
+
+        //initialize the SDK
+        Places.initialize(getApplicationContext(), "AIzaSyBRHh0CaCFRuvQ4IeQfzKt3K-gJ_UQrFzE");
+        //create a new PlacesClient instance
+        placesClient = Places.createClient(this);
 
         tvUsername = findViewById(R.id.tvUsername);
         tvDescription = findViewById(R.id.tvDescription);
@@ -38,12 +56,15 @@ public class PostsDetailsActivity extends AppCompatActivity {
         ivProfileImage = findViewById(R.id.ivProfileImage);
         ivImage = findViewById(R.id.ivImage);
 
+        initGoogleMaps(savedInstanceState);
+
         post = (Post) Parcels.unwrap(getIntent().getParcelableExtra(Post.class.getSimpleName()));
         Log.i("PostsDetailsActivity", "Showing Post Details!");
 
         tvUsername.setText(post.getUser().getUsername());
         tvDescription.setText(post.getDescription());
         tvLocationName.setText(post.getLocationName());
+
 
         ParseFile pic = post.getProfileImage();
         if (pic != null) {
@@ -84,5 +105,52 @@ public class PostsDetailsActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void initGoogleMaps(Bundle savedInstanceState){
+        Bundle mapViewBundle = null;
+        if(savedInstanceState != null){
+            mapViewBundle = savedInstanceState.getBundle(MAPVIEW_BUNDLE_KEY);
+        }
+        mvMap = findViewById(R.id.mvMap);
+        mvMap.onCreate(mapViewBundle);
+        mvMap.getMapAsync(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        googleMap.addMarker(new MarkerOptions()
+                .position(new LatLng(0, 0))
+                .title("Marker"));
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
     }
 }

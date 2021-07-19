@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
     <application
         android:name=".ParseApplication"
@@ -16,6 +17,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FocusHQ"
         android:usesCleartextTraffic="true">
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-5414779520425770~4642180646"/>
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBRHh0CaCFRuvQ4IeQfzKt3K-gJ_UQrFzE"/>
         <activity android:name=".PostsDetailsActivity"></activity>
         <activity
             android:name=".LoginActivity"

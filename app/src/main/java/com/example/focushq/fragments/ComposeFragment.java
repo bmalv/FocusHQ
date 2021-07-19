@@ -70,8 +70,6 @@ public class ComposeFragment extends Fragment {
     private ImageSwitcher ivImage;
     private Button btnPrev;
     private Button btnNext;
-    private File photoFile;
-    public String photoFileName = "photo.jpg";
 
     //store images
     private ArrayList<Uri> imageUris;
@@ -104,7 +102,6 @@ public class ComposeFragment extends Fragment {
         btnPrev = view.findViewById(R.id.btnPrev);
         btnNext = view.findViewById(R.id.btnNext);
 
-        photoFile = new File(photoFileName);
         imageUris = new ArrayList<>();
 
         //setting up image switcher
@@ -184,13 +181,13 @@ public class ComposeFragment extends Fragment {
                     return;
                 }
 
-//                //checking the photo
-//                if(ivImage == null){
-//                     /*if getDrawable is null means the user is
-//                    trying to submit a post without having an image data*/
-//                    Toast.makeText(getContext(), "There is no image!", Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
+                //checking the photo
+                if(imageUris.get(0) == null){
+                     /*if getDrawable is null means the user is
+                    trying to submit a post without having an image data*/
+                    Toast.makeText(getContext(), "There is no image!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 ParseUser currentUser = ParseUser.getCurrentUser();
                 //save the post to Parse fields
@@ -238,46 +235,11 @@ public class ComposeFragment extends Fragment {
         }
     }
 
-    // Returns the File for a photo stored on disk given the fileName
-    public File getPhotoFileUri(String fileName) {
-        // Get safe storage directory for photos
-        // Use `getExternalFilesDir` on Context to access package-specific directories.
-        // This way, we don't need to request external read/write runtime permissions.
-        File mediaStorageDir = new File(getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), TAG);
-
-        // Create the storage directory if it does not exist
-        if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()){
-            Log.d(TAG, "failed to create directory");
-        }
-
-        // Return the file target for the photo based on filename
-        return new File(mediaStorageDir.getPath() + File.separator + fileName);
-    }
-
-    public Bitmap loadFromUri(Uri photoUri) {
-        Bitmap image = null;
-        try {
-            // check version of Android on device
-            if(Build.VERSION.SDK_INT > 27){
-                // on newer versions of Android, use the new decodeBitmap method
-                ImageDecoder.Source source = ImageDecoder.createSource(getContext().getContentResolver(), photoUri);
-                image = ImageDecoder.decodeBitmap(source);
-            } else {
-                // support older versions of Android by using getBitmap
-                image = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), photoUri);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return image;
-    }
-
 
     private void savePost(String description, String locationName, ParseUser currentUser) {
         Post post = new Post();
         post.setDescription(description);
         post.setLocationName(locationName);
-      //  Log.d(TAG, "image uri: " + imageUris.get(0).getPath());
         File file = new File(getPath(imageUris.get(0)));
         ParseFile parseFile = new ParseFile(file);
         post.setImage(parseFile);
