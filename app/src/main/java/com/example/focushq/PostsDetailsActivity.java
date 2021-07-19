@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -39,6 +40,7 @@ public class PostsDetailsActivity extends AppCompatActivity implements OnMapRead
 
     //sdk client variable
     PlacesClient placesClient;
+    private GoogleMap mMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +48,7 @@ public class PostsDetailsActivity extends AppCompatActivity implements OnMapRead
         setContentView(R.layout.activity_posts_details);
 
         //initialize the SDK
-        Places.initialize(getApplicationContext(), "AIzaSyBRHh0CaCFRuvQ4IeQfzKt3K-gJ_UQrFzE");
+        Places.initialize(getApplicationContext(), "com.google.android.geo.API_KEY");
         //create a new PlacesClient instance
         placesClient = Places.createClient(this);
 
@@ -134,9 +136,13 @@ public class PostsDetailsActivity extends AppCompatActivity implements OnMapRead
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        googleMap.addMarker(new MarkerOptions()
-                .position(new LatLng(0, 0))
-                .title("Marker"));
+        mMap = googleMap;
+        // Add a marker in Sydney and move the camera
+//        LatLng sydney = new LatLng(-34, 151);
+//        mMap.addMarker(new MarkerOptions()
+//                .position(sydney)
+//                .title("Marker in Sydney"));
+//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 
     @Override
