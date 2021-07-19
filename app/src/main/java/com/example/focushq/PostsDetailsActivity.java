@@ -1,7 +1,10 @@
 package com.example.focushq;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -122,41 +125,47 @@ public class PostsDetailsActivity extends AppCompatActivity implements OnMapRead
     @Override
     public void onResume() {
         super.onResume();
+        mvMap.onResume();
     }
 
     @Override
     public void onStart() {
         super.onStart();
+        mvMap.onStart();
     }
 
     @Override
     public void onStop() {
         super.onStop();
+        mvMap.onStop();
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-        // Add a marker in Sydney and move the camera
-//        LatLng sydney = new LatLng(-34, 151);
-//        mMap.addMarker(new MarkerOptions()
-//                .position(sydney)
-//                .title("Marker in Sydney"));
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        googleMap.addMarker(new MarkerOptions().position(new LatLng(0,0)).title("Marker"));
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED){
+            return;
+        }
     }
 
     @Override
     public void onPause() {
+        mvMap.onPause();
         super.onPause();
     }
 
     @Override
     public void onDestroy() {
+        mvMap.onDestroy();
         super.onDestroy();
     }
 
     @Override
     public void onLowMemory() {
         super.onLowMemory();
+        mvMap.onLowMemory();
     }
 }
