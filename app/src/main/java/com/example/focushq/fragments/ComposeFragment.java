@@ -9,6 +9,8 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageDecoder;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -40,6 +42,7 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -70,6 +73,8 @@ public class ComposeFragment extends Fragment {
     private ImageSwitcher ivImage;
     private Button btnPrev;
     private Button btnNext;
+    public String photoFileName = "photo.jpg";
+    private File file;
 
     //store images
     private ArrayList<Uri> imageUris;
@@ -101,6 +106,8 @@ public class ComposeFragment extends Fragment {
         ivImage = view.findViewById(R.id.ivImage);
         btnPrev = view.findViewById(R.id.btnPrev);
         btnNext = view.findViewById(R.id.btnNext);
+
+        file = new File(photoFileName);
 
         imageUris = new ArrayList<>();
 
@@ -147,7 +154,6 @@ public class ComposeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Log.i(TAG,"capture button clicked!");
-               // onPickPhoto(v);
                 if(ActivityCompat.checkSelfPermission(getContext(),
                         Manifest.permission.READ_EXTERNAL_STORAGE)
                         != PackageManager.PERMISSION_GRANTED){
@@ -189,6 +195,39 @@ public class ComposeFragment extends Fragment {
                     return;
                 }
 
+                Bitmap selectedImage = rotateBitmapOrientation(getPath(imageUris.get(0)));
+                Bitmap resizedBitmap = BitmapScaler.scaleToFitWidth(selectedImage, 200);
+                Log.d(TAG, "resized the bitmap!");
+                // Configure byte output stream
+                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                // Compress the image further
+                resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 40, bytes);
+                // Create a new file for the resized bitmap (`getPhotoFileUri` defined above)
+                File resizedFile = getPhotoFileUri(photoFileName + "_resized");
+                try {
+                    resizedFile.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                FileOutputStream fos = null;
+                try {
+                    fos = new FileOutputStream(resizedFile);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                // Write the bytes of the bitmap to file
+                try {
+                    fos.write(bytes.toByteArray());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                file = resizedFile;
+
                 ParseUser currentUser = ParseUser.getCurrentUser();
                 //save the post to Parse fields
                 savePost(description, locationName, currentUser);
@@ -198,6 +237,7 @@ public class ComposeFragment extends Fragment {
 
     //function will open up the user's gallery
     public void launchGalleryIntent() {
+        Log.i(TAG,"launched gallery intent");
         //permission was granted
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         //intent will allow multiple images to be chosen
@@ -240,7 +280,7 @@ public class ComposeFragment extends Fragment {
         Post post = new Post();
         post.setDescription(description);
         post.setLocationName(locationName);
-        File file = new File(getPath(imageUris.get(0)));
+      //  File file = new File(getPath(imageUris.get(0)));
         ParseFile parseFile = new ParseFile(file);
         post.setImage(parseFile);
         post.setUser(currentUser);
@@ -271,6 +311,69 @@ public class ComposeFragment extends Fragment {
         return s;
     }
 
+    public Bitmap rotateBitmapOrientation(String photoFilePath) {
+        // Create and configure BitmapFactory
+        BitmapFactory.Options bounds = new BitmapFactory.Options();
+        bounds.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(photoFilePath, bounds);
+        BitmapFactory.Options opts = new BitmapFactory.Options();
+        Bitmap bm = BitmapFactory.decodeFile(photoFilePath, opts);
+        // Read EXIF Data
+        ExifInterface exif = null;
+        try {
+            exif = new ExifInterface(photoFilePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String orientString = exif.getAttribute(ExifInterface.TAG_ORIENTATION);
+        int orientation = orientString != null ? Integer.parseInt(orientString) : ExifInterface.ORIENTATION_NORMAL;
+        int rotationAngle = 0;
+        if (orientation == ExifInterface.ORIENTATION_ROTATE_90) rotationAngle = 90;
+        if (orientation == ExifInterface.ORIENTATION_ROTATE_180) rotationAngle = 180;
+        if (orientation == ExifInterface.ORIENTATION_ROTATE_270) rotationAngle = 270;
+        // Rotate Bitmap
+        Matrix matrix = new Matrix();
+        matrix.setRotate(rotationAngle, (float) bm.getWidth() / 2, (float) bm.getHeight() / 2);
+        Bitmap rotatedBitmap = Bitmap.createBitmap(bm, 0, 0, bounds.outWidth, bounds.outHeight, matrix, true);
+        Log.d(TAG,"rotated the bitmap!");
+        // Return result
+        return rotatedBitmap;
+    }
 
+    public static class BitmapScaler {
+        // Scale and maintain aspect ratio given a desired width
+        // BitmapScaler.scaleToFitWidth(bitmap, 100);
+        public static Bitmap scaleToFitWidth(Bitmap b, int width)
+        {
+            float factor = width / (float) b.getWidth();
+            return Bitmap.createScaledBitmap(b, width, (int) (b.getHeight() * factor), true);
+        }
+
+
+        // Scale and maintain aspect ratio given a desired height
+        // BitmapScaler.scaleToFitHeight(bitmap, 100);
+        public static Bitmap scaleToFitHeight(Bitmap b, int height)
+        {
+            float factor = height / (float) b.getHeight();
+            return Bitmap.createScaledBitmap(b, (int) (b.getWidth() * factor), height, true);
+        }
+
+    }
+
+    // Returns the File for a photo stored on disk given the fileName
+    public File getPhotoFileUri(String fileName) {
+        // Get safe storage directory for photos
+        // Use `getExternalFilesDir` on Context to access package-specific directories.
+        // This way, we don't need to request external read/write runtime permissions.
+        File mediaStorageDir = new File(getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), TAG);
+
+        // Create the storage directory if it does not exist
+        if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()){
+            Log.d(TAG, "failed to create directory");
+        }
+
+        // Return the file target for the photo based on filename
+        return new File(mediaStorageDir.getPath() + File.separator + fileName);
+    }
 
 }
