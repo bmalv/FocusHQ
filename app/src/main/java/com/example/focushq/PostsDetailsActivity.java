@@ -22,6 +22,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.CancellationToken;
 import com.google.android.gms.tasks.Task;
@@ -216,7 +217,13 @@ public class PostsDetailsActivity extends AppCompatActivity implements OnMapRead
                 double lat = addy.getLatitude();
                 double lng = addy.getLongitude();
                 Log.i("PostsDetailsActivity", "address: " + addy.getAddressLine(0) + " lat: " + lat + " lng: " + lng);
-                googleMap.addMarker(new MarkerOptions().position(new LatLng(lat,lng)).title(placeID));
+                LatLng position = new LatLng(lat,lng);
+                googleMap.addMarker(new MarkerOptions().position(position).title(placeID));
+                LatLngBounds bounds = new LatLngBounds(position,position);
+                LatLng center = bounds.getCenter();
+                googleMap.setLatLngBoundsForCameraTarget(bounds);
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(center,15));
+
             }else{
                 Log.i("PostsDetailsActivity", "no address found");
             }
