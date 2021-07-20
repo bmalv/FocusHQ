@@ -45,8 +45,6 @@ public class ProfileFragment extends Fragment {
     private TextView tvUsername;
     private ImageView ivProfileImage;
 
-    private MenuItem logoutItem;
-
     public ProfileFragment() {
         // Required empty public constructor
     }

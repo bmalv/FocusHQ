@@ -1,10 +1,14 @@
 package com.example.focushq;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -19,12 +23,22 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.CancellationToken;
+import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.FetchPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
 
 import org.parceler.Parcels;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PostsDetailsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -43,7 +57,7 @@ public class PostsDetailsActivity extends AppCompatActivity implements OnMapRead
 
     //sdk client variable
     PlacesClient placesClient;
-    private GoogleMap mMap;
+    String placeID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +84,7 @@ public class PostsDetailsActivity extends AppCompatActivity implements OnMapRead
         tvDescription.setText(post.getDescription());
         tvLocationName.setText(post.getLocationName());
 
+        setPlaceID();
 
         ParseFile pic = post.getProfileImage();
         if (pic != null) {
@@ -85,6 +100,50 @@ public class PostsDetailsActivity extends AppCompatActivity implements OnMapRead
                     .into(ivImage);
         }
 
+    }
+
+    //function makes a FetchPlaceRequest and sets the placeID
+    //to the location name given by the user
+    public void setPlaceID(){
+        FetchPlaceRequest request  = new FetchPlaceRequest() {
+
+            @NonNull
+            @Override
+            public String getPlaceId() {
+                //returns the ID of the place to be requested
+                return tvLocationName.getText().toString();
+            }
+
+            @NonNull
+            @Override
+            public List<Place.Field> getPlaceFields() {
+                //Returns the Place.Field list to be requested.
+                return null;
+            }
+
+            @Nullable
+            @Override
+            public AutocompleteSessionToken getSessionToken() {
+                //Returns the AutocompleteSessionToken used for sessionizing
+                //multiple instances ofFindAutocompletePredictionsRequest.
+                return null;
+            }
+
+            @Nullable
+            @Override
+            public CancellationToken getCancellationToken() {
+                //Returns the CancellationToken used by PlacesClient to
+                // cancel any queued requests.
+                return null;
+            }
+        };
+
+        if(request == null){
+            Log.i("PostsDetailsActivity", "request is null");
+        }else{
+            Log.i("PostsDetailsActivity", "request place ID: " + request.getPlaceId());
+            placeID = request.getPlaceId();
+        }
     }
 
     @Override
@@ -142,12 +201,27 @@ public class PostsDetailsActivity extends AppCompatActivity implements OnMapRead
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        googleMap.addMarker(new MarkerOptions().position(new LatLng(0,0)).title("Marker"));
-        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED){
-            return;
+//        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+//                != PackageManager.PERMISSION_GRANTED
+//                && ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION)
+//                != PackageManager.PERMISSION_GRANTED){
+//            return;
+//        }
+        Geocoder location = new Geocoder(this);
+        try {
+            List<Address> response = location.getFromLocationName(placeID, 1);
+            Log.i("PostsDetailsActivity", "list from location name: " + response.toString());
+            if(response.size() == 1){
+                Address addy = response.get(0);
+                double lat = addy.getLatitude();
+                double lng = addy.getLongitude();
+                Log.i("PostsDetailsActivity", "address: " + addy.getAddressLine(0) + " lat: " + lat + " lng: " + lng);
+                googleMap.addMarker(new MarkerOptions().position(new LatLng(lat,lng)).title(placeID));
+            }else{
+                Log.i("PostsDetailsActivity", "no address found");
+            }
+        } catch (IOException e) {
+            Log.i("PostsDetailsActivity", "error getting from location name");
         }
     }
 
