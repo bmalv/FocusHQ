@@ -44,10 +44,18 @@ public class ProfileFragment extends Fragment {
     private List<Post> postsList;
     private TextView tvUsername;
     private ImageView ivProfileImage;
+    ParseUser user;
 
     public ProfileFragment() {
         // Required empty public constructor
+        user = ParseUser.getCurrentUser();
     }
+
+    //constructor used when looking for a user other than the current
+    public ProfileFragment(ParseUser notCurrentUser){
+        user = notCurrentUser;
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -67,8 +75,8 @@ public class ProfileFragment extends Fragment {
         postsList = new ArrayList<>();
         adapter = new PostsAdapter(getContext(), postsList);
 
-        tvUsername.setText(ParseUser.getCurrentUser().getUsername());
-        ParseFile profileImage = ParseUser.getCurrentUser().getParseFile("profileImage");
+        tvUsername.setText(user.getUsername());
+        ParseFile profileImage = user.getParseFile("profileImage");
         if(profileImage != null){
             Log.d("ProfileFragment", "loaded profile pic");
             Glide.with(getContext())
@@ -77,7 +85,7 @@ public class ProfileFragment extends Fragment {
                     .into(ivProfileImage);
         }
 
-
+        Log.i(TAG,"user profile displaying: " + user.getUsername());
         rvPosts.setAdapter(adapter);
         rvPosts.setLayoutManager(new GridLayoutManager(getContext(), 2));
         queryPosts();
@@ -87,7 +95,7 @@ public class ProfileFragment extends Fragment {
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         //want to get the author information of the posts
         query.include(Post.USER_KEY);
-        query.whereEqualTo(Post.USER_KEY, ParseUser.getCurrentUser());
+        query.whereEqualTo(Post.USER_KEY, user);
         query.setLimit(20);
         query.addDescendingOrder(Post.CREATED_AT_KEY);
         query.findInBackground(new FindCallback<Post>() {

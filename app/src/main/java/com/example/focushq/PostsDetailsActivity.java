@@ -4,8 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -13,10 +17,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.focushq.fragments.ProfileFragment;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -75,6 +83,8 @@ public class PostsDetailsActivity extends AppCompatActivity implements OnMapRead
         tvLocationName = findViewById(R.id.tvLocationName);
         ivProfileImage = findViewById(R.id.ivProfileImage);
         ivImage = findViewById(R.id.ivImage);
+        final LinearLayout linearLayout =  findViewById(R.id.linearLayout);
+        final RelativeLayout relativeLayout = findViewById(R.id.relativeLayout);
 
         initGoogleMaps(savedInstanceState);
 
@@ -100,6 +110,18 @@ public class PostsDetailsActivity extends AppCompatActivity implements OnMapRead
                      .getUrl())
                     .into(ivImage);
         }
+
+        ivProfileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("PostsDetailsActivity", "profile image was clicked");
+                //let user travel to that users profile
+                ParseUser author = post.getUser();
+                Fragment fragment = new ProfileFragment(author);
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.relativeLayout, fragment).commit();
+            }
+        });
 
     }
 
