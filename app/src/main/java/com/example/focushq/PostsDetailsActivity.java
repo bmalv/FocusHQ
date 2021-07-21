@@ -83,8 +83,6 @@ public class PostsDetailsActivity extends AppCompatActivity implements OnMapRead
         tvLocationName = findViewById(R.id.tvLocationName);
         ivProfileImage = findViewById(R.id.ivProfileImage);
         ivImage = findViewById(R.id.ivImage);
-        final LinearLayout linearLayout =  findViewById(R.id.linearLayout);
-        final RelativeLayout relativeLayout = findViewById(R.id.relativeLayout);
 
         initGoogleMaps(savedInstanceState);
 

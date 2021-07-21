@@ -1,5 +1,6 @@
 package com.example.focushq.fragments;
 
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -15,6 +16,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -44,6 +46,7 @@ public class ProfileFragment extends Fragment {
     private List<Post> postsList;
     private TextView tvUsername;
     private ImageView ivProfileImage;
+    private Button btnFollow;
     ParseUser user;
 
     public ProfileFragment() {
@@ -71,6 +74,7 @@ public class ProfileFragment extends Fragment {
         rvPosts = view.findViewById(R.id.rvPosts);
         tvUsername = view.findViewById(R.id.tvUsername);
         ivProfileImage = view.findViewById(R.id.ivProfileImage);
+        btnFollow = view.findViewById(R.id.btnFollow);
 
         postsList = new ArrayList<>();
         adapter = new PostsAdapter(getContext(), postsList);
@@ -84,6 +88,30 @@ public class ProfileFragment extends Fragment {
                     .circleCrop()
                     .into(ivProfileImage);
         }
+
+        if(user == ParseUser.getCurrentUser()){
+            //the user can not follow themselves
+            btnFollow.setVisibility(View.GONE);
+        }else{
+            //the user can not follow themselves
+            btnFollow.setVisibility(View.VISIBLE);
+            //first time clicking on this profile
+            if(btnFollow.getText().equals("")){
+                btnFollow.setText("FOLLOW");
+            }
+        }
+
+        btnFollow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(btnFollow.getText().equals("FOLLOW")){
+                    btnFollow.setText("UNFOLLOW");
+                    btnFollow.setBackgroundColor(Color.GRAY);
+                }else{
+                    btnFollow.setText("FOLLOW");
+                }
+            }
+        });
 
         Log.i(TAG,"user profile displaying: " + user.getUsername());
         rvPosts.setAdapter(adapter);
