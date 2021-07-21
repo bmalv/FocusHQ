@@ -6,23 +6,41 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.focushq.Post;
+import com.example.focushq.PostsAdapter;
 import com.example.focushq.R;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.tasks.CancellationToken;
+import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
 import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.FetchPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+
+import okhttp3.Response;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
@@ -36,6 +54,10 @@ public class SearchFragment extends Fragment {
     private final String TAG = "SearchFragment";
 
     PlacesClient placesClient;
+    RecyclerView rvResults;
+    private PostsAdapter adapter;
+    private List<Post> postsList;
+    String locationName;
 
     public SearchFragment() {
         // Required empty public constructor
@@ -53,8 +75,12 @@ public class SearchFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        rvResults = view.findViewById(R.id.rvResults);
+        postsList = new ArrayList<>();
+        adapter = new PostsAdapter(getContext(),postsList);
+
         //initialize the SDK
-        Places.initialize(getContext().getApplicationContext(), "com.google.android.geo.API_KEY");
+        Places.initialize(getContext().getApplicationContext(), "AIzaSyBRHh0CaCFRuvQ4IeQfzKt3K-gJ_UQrFzE");
         //create a new PlacesClient instance
         placesClient = Places.createClient(getContext());
 
@@ -70,7 +96,44 @@ public class SearchFragment extends Fragment {
             @Override
             public void onPlaceSelected(@NonNull Place place) {
                 // TODO: Get info about the selected place.
-                Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
+                Log.i(TAG, "Place: " + place.getName() + " place ID: " + place.getId());
+                FetchPlaceRequest request = new FetchPlaceRequest() {
+                    @NonNull
+                    @Override
+                    public String getPlaceId() {
+                        return place.getId();
+                    }
+
+                    @NonNull
+                    @Override
+                    public List<Place.Field> getPlaceFields() {
+                        return null;
+                    }
+
+                    @Nullable
+                    @Override
+                    public AutocompleteSessionToken getSessionToken() {
+                        return null;
+                    }
+
+                    @Nullable
+                    @Override
+                    public CancellationToken getCancellationToken() {
+                        return null;
+                    }
+                };
+//                if(request != null){
+//                   // Task<FetchPlaceResponse> fetchPlaceResponseTask = placesClient.fetchPlace(request);
+//                    List<String> attributes = place.getAttributions();
+//                    Log.i(TAG,"place attributes: " + attributes.toString());
+//                }
+                locationName = place.getName();
+                Log.i(TAG, "set location name: " + locationName);
+                rvResults.setAdapter(adapter);
+                rvResults.setLayoutManager(new LinearLayoutManager(getContext()));
+                postsList.clear();
+                adapter.notifyDataSetChanged();
+                queryPosts();
             }
 
 
@@ -98,5 +161,32 @@ public class SearchFragment extends Fragment {
             return;
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void queryPosts() {
+        Log.i(TAG,"in queryPosts");
+        ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
+        //want to get the author information of the posts
+        query.include(Post.USER_KEY);
+        //only include posts with the same location name
+        query.whereEqualTo(Post.LOCATION_NAME_KEY, locationName);
+        query.setLimit(20);
+        query.addDescendingOrder(Post.CREATED_AT_KEY);
+        query.findInBackground(new FindCallback<Post>() {
+            @Override
+            public void done(List<Post> posts, ParseException e) {
+                if(e != null){
+                    Log.e(TAG, "Issue with getting posts", e);
+                    return;
+                }
+                //not null iterate through posts
+                for(Post post: posts){
+                    //prints in the log cat the post along with user associated with the post
+                    Log.i(TAG,"Post: " + post.getDescription() + ", username: " + post.getUser().getUsername());
+                }
+                postsList.addAll(posts);
+                adapter.notifyDataSetChanged();
+            }
+        });
     }
 }

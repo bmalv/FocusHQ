@@ -68,7 +68,6 @@ public class ProfileFragment extends Fragment {
         adapter = new PostsAdapter(getContext(), postsList);
 
         tvUsername.setText(ParseUser.getCurrentUser().getUsername());
-        //TODO: access the profile image and set it
         ParseFile profileImage = ParseUser.getCurrentUser().getParseFile("profileImage");
         if(profileImage != null){
             Log.d("ProfileFragment", "loaded profile pic");

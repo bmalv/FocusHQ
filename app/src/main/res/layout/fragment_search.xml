@@ -14,4 +14,10 @@
         android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
         />
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvResults"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="40dp" />
+
 </FrameLayout>

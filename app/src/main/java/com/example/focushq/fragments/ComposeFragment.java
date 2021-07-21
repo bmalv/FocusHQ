@@ -19,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -26,6 +27,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -231,6 +234,7 @@ public class ComposeFragment extends Fragment {
                 ParseUser currentUser = ParseUser.getCurrentUser();
                 //save the post to Parse fields
                 savePost(description, locationName, currentUser);
+//                fragmentManager.beginTransaction().replace(R.id.flContainer, R.id.action_home).commit();
             }
         });
     }

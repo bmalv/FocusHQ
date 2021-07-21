@@ -161,8 +161,6 @@ public class PostsDetailsActivity extends AppCompatActivity implements OnMapRead
         // handle item selection
         switch (item.getItemId()) {
             case R.id.action_back:
-                // Handle this selection
-                ParseUser.logOut();
                 Log.i("PostsDetailsActivity", "user taken back to home screen");
                 //go back to home screen
                 finish();
@@ -223,7 +221,6 @@ public class PostsDetailsActivity extends AppCompatActivity implements OnMapRead
                 LatLng center = bounds.getCenter();
                 googleMap.setLatLngBoundsForCameraTarget(bounds);
                 googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(center,15));
-
             }else{
                 Log.i("PostsDetailsActivity", "no address found");
             }

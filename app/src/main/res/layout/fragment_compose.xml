@@ -48,6 +48,13 @@
             android:ems="10"
             android:hint="Description..." />
 
+        <AutoCompleteTextView
+            android:id="@+id/actvLocationName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:completionHint="Location name here..."
+            tools:text="Location..." />
+
     </LinearLayout>
 
     <ImageButton
