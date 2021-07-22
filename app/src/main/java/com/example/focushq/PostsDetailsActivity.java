@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.focushq.fragments.ProfileFragment;
@@ -31,6 +32,7 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.CancellationToken;
 import com.google.android.gms.tasks.Task;
@@ -220,27 +222,34 @@ public class PostsDetailsActivity extends AppCompatActivity implements OnMapRead
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-//        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-//                != PackageManager.PERMISSION_GRANTED
-//                && ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION)
-//                != PackageManager.PERMISSION_GRANTED){
-//            return;
-//        }
         Geocoder location = new Geocoder(this);
         try {
             List<Address> response = location.getFromLocationName(placeID, 1);
             Log.i("PostsDetailsActivity", "list from location name: " + response.toString());
             if(response.size() == 1){
                 Address addy = response.get(0);
-                double lat = addy.getLatitude();
-                double lng = addy.getLongitude();
-                Log.i("PostsDetailsActivity", "address: " + addy.getAddressLine(0) + " lat: " + lat + " lng: " + lng);
-                LatLng position = new LatLng(lat,lng);
-                googleMap.addMarker(new MarkerOptions().position(position).title(placeID));
+                LatLng position = new LatLng(addy.getLatitude(),addy.getLongitude());
+
+                String snip = "Address: " + addy.getAddressLine(0);
+                googleMap.addMarker(new MarkerOptions().position(position).title(placeID).snippet(snip));
                 LatLngBounds bounds = new LatLngBounds(position,position);
                 LatLng center = bounds.getCenter();
                 googleMap.setLatLngBoundsForCameraTarget(bounds);
                 googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(center,15));
+
+                //if user clicks the marker on the map
+                googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(@NonNull Marker marker) {
+                        googleMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(PostsDetailsActivity.this));
+                        marker.showInfoWindow();
+                        if(marker.isInfoWindowShown()){
+                            Log.i("PostsDetailsActivity", "showing info window");
+                        }
+                        return true;
+                    }
+                });
+
             }else{
                 Log.i("PostsDetailsActivity", "no address found");
             }
@@ -248,6 +257,8 @@ public class PostsDetailsActivity extends AppCompatActivity implements OnMapRead
             Log.i("PostsDetailsActivity", "error getting from location name");
         }
     }
+
+
 
     @Override
     public void onPause() {
