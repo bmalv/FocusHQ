@@ -14,6 +14,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.Toast;
 
 import com.example.focushq.Post;
 import com.example.focushq.PostsAdapter;
@@ -53,11 +55,13 @@ public class SearchFragment extends Fragment {
     private static final int AUTOCOMPLETE_REQUEST_CODE = 0;
     private final String TAG = "SearchFragment";
 
-    PlacesClient placesClient;
-    RecyclerView rvResults;
+    private PlacesClient placesClient;
+    private RecyclerView rvResults;
     private PostsAdapter adapter;
     private List<Post> postsList;
-    String locationName;
+    private String locationName;
+    private Button btnLocationSearch;
+    private Button btnUserSearch;
 
     public SearchFragment() {
         // Required empty public constructor
@@ -78,12 +82,56 @@ public class SearchFragment extends Fragment {
         rvResults = view.findViewById(R.id.rvResults);
         postsList = new ArrayList<>();
         adapter = new PostsAdapter(getContext(),postsList);
+        btnLocationSearch = view.findViewById(R.id.btnLocationSearch);
+        btnUserSearch = view.findViewById(R.id.btnUserSearch);
 
         //initialize the SDK
-        Places.initialize(getContext().getApplicationContext(), "AIzaSyBRHh0CaCFRuvQ4IeQfzKt3K-gJ_UQrFzE");
+        Places.initialize(getContext().getApplicationContext(), "AIzaSyBVFXLXDXJNo4RyKYXwh-u7LNQyjHYJjnU");
+//        //initialize the SDK
+//        Places.initialize(getContext().getApplicationContext(), "com.google.android.geo.API_KEY");
         //create a new PlacesClient instance
         placesClient = Places.createClient(getContext());
 
+        btnLocationSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setLocationSearch();
+                Log.i(TAG, "Location Search Mode!");
+                Toast.makeText(getContext(), "Location Search Mode!", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        btnUserSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                postsList.clear();
+                adapter.notifyDataSetChanged();
+                Log.i(TAG, "User Search Mode!");
+                Toast.makeText(getContext(), "User Search Mode!", Toast.LENGTH_LONG).show();
+            }
+        });
+
+
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                Place place = Autocomplete.getPlaceFromIntent(data);
+                Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
+            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
+                Status status = Autocomplete.getStatusFromIntent(data);
+                Log.i(TAG, status.getStatusMessage());
+            } else if (resultCode == RESULT_CANCELED) {
+                // The user canceled the operation.
+            }
+            return;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void setLocationSearch(){
         // Initialize the AutocompleteSupportFragment.
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
                 getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
@@ -123,11 +171,7 @@ public class SearchFragment extends Fragment {
                         return null;
                     }
                 };
-//                if(request != null){
-//                   // Task<FetchPlaceResponse> fetchPlaceResponseTask = placesClient.fetchPlace(request);
-//                    List<String> attributes = place.getAttributions();
-//                    Log.i(TAG,"place attributes: " + attributes.toString());
-//                }
+
                 locationName = place.getName();
                 Log.i(TAG, "set location name: " + locationName);
                 rvResults.setAdapter(adapter);
@@ -144,23 +188,6 @@ public class SearchFragment extends Fragment {
                 Log.i(TAG, "An error occurred: " + status);
             }
         });
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                Place place = Autocomplete.getPlaceFromIntent(data);
-                Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
-            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
-                Status status = Autocomplete.getStatusFromIntent(data);
-                Log.i(TAG, status.getStatusMessage());
-            } else if (resultCode == RESULT_CANCELED) {
-                // The user canceled the operation.
-            }
-            return;
-        }
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void queryPosts() {

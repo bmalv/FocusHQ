@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.focushq.fragments.ProfileFragment;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -49,6 +50,7 @@ import org.parceler.Parcels;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class PostsDetailsActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -56,7 +58,7 @@ public class PostsDetailsActivity extends AppCompatActivity implements OnMapRead
     private static final String MAPVIEW_BUNDLE_KEY = "MapViewBundleKey";
 
     //the post to display
-    Post post;
+    private Post post;
 
     //view objects
     TextView tvUsername;
@@ -68,6 +70,7 @@ public class PostsDetailsActivity extends AppCompatActivity implements OnMapRead
 
     //sdk client variable
     PlacesClient placesClient;
+    Place place;
     String placeID;
 
     @Override
@@ -103,11 +106,11 @@ public class PostsDetailsActivity extends AppCompatActivity implements OnMapRead
         }
 
         ParseFile image = post.getImage();
-        if(image != null){
+        if (image != null) {
             //upload the image
             Glide.with(this)
                     .load(post.getImage()
-                     .getUrl())
+                            .getUrl())
                     .into(ivImage);
         }
 
@@ -127,8 +130,8 @@ public class PostsDetailsActivity extends AppCompatActivity implements OnMapRead
 
     //function makes a FetchPlaceRequest and sets the placeID
     //to the location name given by the user
-    public void setPlaceID(){
-        FetchPlaceRequest request  = new FetchPlaceRequest() {
+    public void setPlaceID() {
+        FetchPlaceRequest request = new FetchPlaceRequest() {
 
             @NonNull
             @Override
@@ -141,7 +144,8 @@ public class PostsDetailsActivity extends AppCompatActivity implements OnMapRead
             @Override
             public List<Place.Field> getPlaceFields() {
                 //Returns the Place.Field list to be requested.
-                return null;
+                List<Place.Field> placeFields = Arrays.asList(Place.Field.ID,Place.Field.NAME);
+                return placeFields;
             }
 
             @Nullable
@@ -161,11 +165,22 @@ public class PostsDetailsActivity extends AppCompatActivity implements OnMapRead
             }
         };
 
-        if(request == null){
+        if (request == null) {
             Log.i("PostsDetailsActivity", "request is null");
-        }else{
+        } else {
             Log.i("PostsDetailsActivity", "request place ID: " + request.getPlaceId());
             placeID = request.getPlaceId();
+            placesClient.fetchPlace(request).addOnSuccessListener((response) ->{
+                place = response.getPlace();
+                Log.i("PostsDetailsActivity", "place set to: " + place.getName());
+            }).addOnFailureListener((exception) ->{
+                if(exception instanceof ApiException){
+                    ApiException apiException = (ApiException) exception;
+                    int statusCode = apiException.getStatusCode();
+                    Log.e("PostsDetailsActivity", "Place not found: " + exception.getMessage()
+                            + " status code: " + statusCode);
+                }
+            });
         }
     }
 
@@ -173,7 +188,7 @@ public class PostsDetailsActivity extends AppCompatActivity implements OnMapRead
     public boolean onCreateOptionsMenu(Menu menu) {
         // return super.onCreateOptionsMenu(menu);
         // Inflate the menu; this adds items to the action bar.
-        Log.d("PostsDetailsActivity","in inflating menu");
+        Log.d("PostsDetailsActivity", "in inflating menu");
         getMenuInflater().inflate(R.menu.menu_back_button, menu);
         return true;
     }
@@ -192,9 +207,9 @@ public class PostsDetailsActivity extends AppCompatActivity implements OnMapRead
         }
     }
 
-    private void initGoogleMaps(Bundle savedInstanceState){
+    private void initGoogleMaps(Bundle savedInstanceState) {
         Bundle mapViewBundle = null;
-        if(savedInstanceState != null){
+        if (savedInstanceState != null) {
             mapViewBundle = savedInstanceState.getBundle(MAPVIEW_BUNDLE_KEY);
         }
         mvMap = findViewById(R.id.mvMap);
@@ -226,31 +241,9 @@ public class PostsDetailsActivity extends AppCompatActivity implements OnMapRead
         try {
             List<Address> response = location.getFromLocationName(placeID, 1);
             Log.i("PostsDetailsActivity", "list from location name: " + response.toString());
-            if(response.size() == 1){
-                Address addy = response.get(0);
-                LatLng position = new LatLng(addy.getLatitude(),addy.getLongitude());
-
-                String snip = "Address: " + addy.getAddressLine(0);
-                googleMap.addMarker(new MarkerOptions().position(position).title(placeID).snippet(snip));
-                LatLngBounds bounds = new LatLngBounds(position,position);
-                LatLng center = bounds.getCenter();
-                googleMap.setLatLngBoundsForCameraTarget(bounds);
-                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(center,15));
-
-                //if user clicks the marker on the map
-                googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                    @Override
-                    public boolean onMarkerClick(@NonNull Marker marker) {
-                        googleMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(PostsDetailsActivity.this));
-                        marker.showInfoWindow();
-                        if(marker.isInfoWindowShown()){
-                            Log.i("PostsDetailsActivity", "showing info window");
-                        }
-                        return true;
-                    }
-                });
-
-            }else{
+            if (response.size() == 1) {
+                setMvMap(response,googleMap);
+            } else {
                 Log.i("PostsDetailsActivity", "no address found");
             }
         } catch (IOException e) {
@@ -258,6 +251,28 @@ public class PostsDetailsActivity extends AppCompatActivity implements OnMapRead
         }
     }
 
+    private void setMvMap(List<Address> response, GoogleMap googleMap){
+        Address addy = response.get(0);
+        LatLng position = new LatLng(addy.getLatitude(), addy.getLongitude());
+        Log.i("PostsDetailsActivity", "response: " + response.toString());
+        String snip = "Address: " + addy.getAddressLine(0);
+        googleMap.addMarker(new MarkerOptions().position(position).title(placeID).snippet(snip));
+        LatLngBounds bounds = new LatLngBounds(position, position);
+        LatLng center = bounds.getCenter();
+        googleMap.setLatLngBoundsForCameraTarget(bounds);
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(center, 15));
+
+        //if user clicks the marker on the map
+        googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(@NonNull Marker marker) {
+                googleMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(PostsDetailsActivity.this));
+                marker.showInfoWindow();
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(center, 18));
+                return true;
+            }
+        });
+    }
 
 
     @Override

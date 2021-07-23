@@ -24,7 +24,7 @@
             android:value="ca-app-pub-5414779520425770~4642180646"/>
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="${MAPS_API_KEY}"/>
+            android:value="MAPS_API_KEY"/>
         <activity android:name=".PostsDetailsActivity"></activity>
         <activity
             android:name=".LoginActivity"
