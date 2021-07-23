@@ -21,16 +21,19 @@ import com.example.focushq.Post;
 import com.example.focushq.PostsAdapter;
 import com.example.focushq.R;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.CancellationToken;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
 import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.RectangularBounds;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.FetchPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
+import com.google.android.libraries.places.widget.AutocompleteFragment;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.parse.FindCallback;
@@ -86,18 +89,16 @@ public class SearchFragment extends Fragment {
         btnUserSearch = view.findViewById(R.id.btnUserSearch);
 
         //initialize the SDK
-        Places.initialize(getContext().getApplicationContext(), "AIzaSyBVFXLXDXJNo4RyKYXwh-u7LNQyjHYJjnU");
-//        //initialize the SDK
-//        Places.initialize(getContext().getApplicationContext(), "com.google.android.geo.API_KEY");
+        Places.initialize(getContext().getApplicationContext(), "com.google.android.geo.API_KEY");
         //create a new PlacesClient instance
         placesClient = Places.createClient(getContext());
 
         btnLocationSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setLocationSearch();
                 Log.i(TAG, "Location Search Mode!");
                 Toast.makeText(getContext(), "Location Search Mode!", Toast.LENGTH_LONG).show();
+                setLocationSearch();
             }
         });
 
@@ -136,7 +137,12 @@ public class SearchFragment extends Fragment {
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
                 getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
 
-        /*TODO: allow for user to search both places and other users */
+        autocompleteFragment.setCountries("US");
+
+        autocompleteFragment.setLocationRestriction(RectangularBounds.newInstance(
+                new LatLng(30.1572,-97.8191),
+                new LatLng(30.4008,-97.7141)));
+
         // Specify the types of place data to return.
         autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
 

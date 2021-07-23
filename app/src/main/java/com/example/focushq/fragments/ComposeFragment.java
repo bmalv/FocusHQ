@@ -20,6 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -39,6 +40,17 @@ import android.widget.ViewSwitcher;
 
 import com.example.focushq.Post;
 import com.example.focushq.R;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.CancellationToken;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.RectangularBounds;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
@@ -53,6 +65,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import droidninja.filepicker.FilePickerBuilder;
@@ -72,12 +85,13 @@ public class ComposeFragment extends Fragment {
     private Button btnCaptureImage;
     private ImageButton btnPublish;
     private EditText etDescription;
-    private EditText etLocationName;
     private ImageSwitcher ivImage;
     private Button btnPrev;
     private Button btnNext;
     public String photoFileName = "photo.jpg";
     private File file;
+    private PlacesClient placesClient;
+    private String locationName;
 
     //store images
     private ArrayList<Uri> imageUris;
@@ -102,7 +116,6 @@ public class ComposeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        etLocationName = view.findViewById(R.id.etLocationName);
         etDescription = view.findViewById(R.id.etDescription);
         btnPublish = view.findViewById(R.id.btnPublish);
         btnCaptureImage = view.findViewById(R.id.btnCaptureImage);
@@ -113,6 +126,13 @@ public class ComposeFragment extends Fragment {
         file = new File(photoFileName);
 
         imageUris = new ArrayList<>();
+
+        //initialize the SDK
+        Places.initialize(getContext().getApplicationContext(), "com.google.android.geo.API_KEY");
+        //create a new PlacesClient instance
+        placesClient = Places.createClient(getContext());
+
+        setLocationSearch();
 
         //setting up image switcher
         ivImage.setFactory(new ViewSwitcher.ViewFactory() {
@@ -175,7 +195,6 @@ public class ComposeFragment extends Fragment {
             public void onClick(View v) {
                 Log.i(TAG,"publish button clicked!");
                 String description = etDescription.getText().toString();
-                String locationName = etLocationName.getText().toString();
 
                 //description can not be empty
                 if(description.isEmpty()){
@@ -233,8 +252,7 @@ public class ComposeFragment extends Fragment {
 
                 ParseUser currentUser = ParseUser.getCurrentUser();
                 //save the post to Parse fields
-                savePost(description, locationName, currentUser);
-//                fragmentManager.beginTransaction().replace(R.id.flContainer, R.id.action_home).commit();
+                savePost(description,currentUser);
             }
         });
     }
@@ -280,7 +298,7 @@ public class ComposeFragment extends Fragment {
     }
 
 
-    private void savePost(String description, String locationName, ParseUser currentUser) {
+    private void savePost(String description, ParseUser currentUser) {
         Post post = new Post();
         post.setDescription(description);
         post.setLocationName(locationName);
@@ -378,6 +396,63 @@ public class ComposeFragment extends Fragment {
 
         // Return the file target for the photo based on filename
         return new File(mediaStorageDir.getPath() + File.separator + fileName);
+    }
+
+    private void setLocationSearch(){
+        // Initialize the AutocompleteSupportFragment.
+        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
+                getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+
+        autocompleteFragment.setCountries("US");
+
+        autocompleteFragment.setLocationRestriction(RectangularBounds.newInstance(
+                new LatLng(30.1572,-97.8191),
+                new LatLng(30.4008,-97.7141)));
+
+        // Specify the types of place data to return.
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
+
+        // Set up a PlaceSelectionListener to handle the response.
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(@NonNull Place place) {
+                // TODO: Get info about the selected place.
+                Log.i(TAG, "Place: " + place.getName() + " place ID: " + place.getId());
+                FetchPlaceRequest request = new FetchPlaceRequest() {
+                    @NonNull
+                    @Override
+                    public String getPlaceId() {
+                        return place.getId();
+                    }
+
+                    @NonNull
+                    @Override
+                    public List<Place.Field> getPlaceFields() {
+                        return null;
+                    }
+
+                    @Nullable
+                    @Override
+                    public AutocompleteSessionToken getSessionToken() {
+                        return null;
+                    }
+
+                    @Nullable
+                    @Override
+                    public CancellationToken getCancellationToken() {
+                        return null;
+                    }
+                };
+                locationName = place.getName();
+            }
+
+
+            @Override
+            public void onError(@NonNull Status status) {
+                // TODO: Handle the error.
+                Log.i(TAG, "An error occurred: " + status);
+            }
+        });
     }
 
 }
