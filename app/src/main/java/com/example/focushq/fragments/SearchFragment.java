@@ -11,10 +11,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.focushq.Post;
@@ -65,6 +70,9 @@ public class SearchFragment extends Fragment {
     private String locationName;
     private Button btnLocationSearch;
     private Button btnUserSearch;
+    private AutoCompleteTextView tvAuto;
+    private AutocompleteSupportFragment autocompleteFragment;
+    private Button btnSearch;
 
     public SearchFragment() {
         // Required empty public constructor
@@ -87,17 +95,33 @@ public class SearchFragment extends Fragment {
         adapter = new PostsAdapter(getContext(),postsList);
         btnLocationSearch = view.findViewById(R.id.btnLocationSearch);
         btnUserSearch = view.findViewById(R.id.btnUserSearch);
+        btnSearch = view.findViewById(R.id.btnSearch);
 
         //initialize the SDK
         Places.initialize(getContext().getApplicationContext(), getResources().getString(R.string.MY_KEY));
         //create a new PlacesClient instance
         placesClient = Places.createClient(getContext());
 
+        // Initialize the AutocompleteSupportFragment.
+        autocompleteFragment = (AutocompleteSupportFragment)
+                getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+
+        // Initialize the Autocomplete text view
+        tvAuto = (AutoCompleteTextView) view.findViewById(R.id.autoUsers);
+
+        //set search bars visibility
+        autocompleteFragment.getView().setVisibility(View.GONE);
+        tvAuto.setVisibility(View.GONE);
+        btnSearch.setVisibility(View.GONE);
+
         btnLocationSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.i(TAG, "Location Search Mode!");
                 Toast.makeText(getContext(), "Location Search Mode!", Toast.LENGTH_LONG).show();
+                tvAuto.setVisibility(View.GONE);
+                btnSearch.setVisibility(View.GONE);
+                autocompleteFragment.getView().setVisibility(View.VISIBLE);
                 setLocationSearch();
             }
         });
@@ -105,14 +129,27 @@ public class SearchFragment extends Fragment {
         btnUserSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //TODO: set the visibility of the autocomplete view
+                tvAuto.setVisibility(View.VISIBLE);
+                btnSearch.setVisibility(View.VISIBLE);
+                autocompleteFragment.getView().setVisibility(View.GONE);
                 postsList.clear();
                 adapter.notifyDataSetChanged();
                 Log.i(TAG, "User Search Mode!");
                 Toast.makeText(getContext(), "User Search Mode!", Toast.LENGTH_LONG).show();
+                String[] usernames = getResources().getStringArray(R.array.usernames_array);
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, usernames);
+                tvAuto.setAdapter(adapter);
+
+                btnSearch.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //TODO: handle searching for the user
+                        Log.i(TAG,"search for user!");
+                    }
+                });
             }
         });
-
-
     }
 
     @Override
@@ -133,9 +170,6 @@ public class SearchFragment extends Fragment {
     }
 
     private void setLocationSearch(){
-        // Initialize the AutocompleteSupportFragment.
-        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
-                getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
 
         autocompleteFragment.setCountries("US");
 
