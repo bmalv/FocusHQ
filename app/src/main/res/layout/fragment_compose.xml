@@ -34,12 +34,11 @@
         android:layout_marginTop="20dp"
         android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/etLocationName"
+        <fragment
+            android:id="@+id/autocomplete_fragment"
+            android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="Location Name..." />
+            android:layout_height="wrap_content" />
 
         <EditText
             android:id="@+id/etDescription"
@@ -47,12 +46,6 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:hint="Description..." />
-
-        <fragment android:id="@+id/autocomplete_fragment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
-            />
 
     </LinearLayout>
 

@@ -128,7 +128,7 @@ public class ComposeFragment extends Fragment {
         imageUris = new ArrayList<>();
 
         //initialize the SDK
-        Places.initialize(getContext().getApplicationContext(), "com.google.android.geo.API_KEY");
+        Places.initialize(getContext().getApplicationContext(), getResources().getString(R.string.MY_KEY));
         //create a new PlacesClient instance
         placesClient = Places.createClient(getContext());
 

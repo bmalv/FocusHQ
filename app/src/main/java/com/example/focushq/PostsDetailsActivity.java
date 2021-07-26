@@ -79,7 +79,7 @@ public class PostsDetailsActivity extends AppCompatActivity implements OnMapRead
         setContentView(R.layout.activity_posts_details);
 
         //initialize the SDK
-        Places.initialize(getApplicationContext(), "com.google.android.geo.API_KEY");
+        Places.initialize(getApplicationContext(), getResources().getString(R.string.MY_KEY));
         //create a new PlacesClient instance
         placesClient = Places.createClient(this);
 

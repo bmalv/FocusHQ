@@ -89,7 +89,7 @@ public class SearchFragment extends Fragment {
         btnUserSearch = view.findViewById(R.id.btnUserSearch);
 
         //initialize the SDK
-        Places.initialize(getContext().getApplicationContext(), "com.google.android.geo.API_KEY");
+        Places.initialize(getContext().getApplicationContext(), getResources().getString(R.string.MY_KEY));
         //create a new PlacesClient instance
         placesClient = Places.createClient(getContext());
 
