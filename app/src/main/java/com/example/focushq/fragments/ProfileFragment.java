@@ -144,4 +144,8 @@ public class ProfileFragment extends Fragment {
         });
     }
 
+    public ParseUser getProfileUser(){
+        return user;
+    }
+
 }

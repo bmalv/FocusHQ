@@ -24,7 +24,10 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="50dp"
-            android:hint="search..." />
+            android:completionHint="select a user"
+            android:completionThreshold="1"
+            android:hint="select a user..."
+            android:popupBackground="@color/sage_green" />
 
         <Button
             android:id="@+id/btnLocationSearch"

@@ -1,11 +1,13 @@
 package com.example.focushq.fragments;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -24,7 +27,9 @@ import android.widget.Toast;
 
 import com.example.focushq.Post;
 import com.example.focushq.PostsAdapter;
+import com.example.focushq.ProfileAdapter;
 import com.example.focushq.R;
+import com.example.focushq.User;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.CancellationToken;
@@ -42,12 +47,16 @@ import com.google.android.libraries.places.widget.AutocompleteFragment;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.parse.FindCallback;
+import com.parse.Parse;
 import com.parse.ParseException;
+import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseRelation;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import okhttp3.Response;
@@ -65,14 +74,18 @@ public class SearchFragment extends Fragment {
 
     private PlacesClient placesClient;
     private RecyclerView rvResults;
-    private PostsAdapter adapter;
+    private PostsAdapter postsAdapter;
+    private ProfileAdapter profileAdapter;
     private List<Post> postsList;
+    private List<ParseUser> users;
     private String locationName;
+    private String userName;
     private Button btnLocationSearch;
     private Button btnUserSearch;
     private AutoCompleteTextView tvAuto;
     private AutocompleteSupportFragment autocompleteFragment;
     private Button btnSearch;
+    private ParseObject parseObject;
 
     public SearchFragment() {
         // Required empty public constructor
@@ -92,7 +105,9 @@ public class SearchFragment extends Fragment {
 
         rvResults = view.findViewById(R.id.rvResults);
         postsList = new ArrayList<>();
-        adapter = new PostsAdapter(getContext(),postsList);
+        postsAdapter = new PostsAdapter(getContext(),postsList);
+        users = new ArrayList<>();
+        profileAdapter = new ProfileAdapter(getContext(),users);
         btnLocationSearch = view.findViewById(R.id.btnLocationSearch);
         btnUserSearch = view.findViewById(R.id.btnUserSearch);
         btnSearch = view.findViewById(R.id.btnSearch);
@@ -134,23 +149,50 @@ public class SearchFragment extends Fragment {
                 btnSearch.setVisibility(View.VISIBLE);
                 autocompleteFragment.getView().setVisibility(View.GONE);
                 postsList.clear();
-                adapter.notifyDataSetChanged();
+                postsAdapter.notifyDataSetChanged();
                 Log.i(TAG, "User Search Mode!");
                 Toast.makeText(getContext(), "User Search Mode!", Toast.LENGTH_LONG).show();
+
                 String[] usernames = getResources().getStringArray(R.array.usernames_array);
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, usernames);
                 tvAuto.setAdapter(adapter);
+
+                rvResults.setAdapter(profileAdapter);
+                rvResults.setLayoutManager(new LinearLayoutManager(getContext()));
+                users.clear();
+                profileAdapter.notifyDataSetChanged();
+
 
                 btnSearch.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         //TODO: handle searching for the user
+                        userName = tvAuto.getText().toString();
+                        Log.i(TAG,"username to search: " + userName);
                         Log.i(TAG,"search for user!");
+                        ParseQuery<ParseUser> query = ParseUser.getQuery();
+                        //want to get the author information of the posts
+                        query.include(User.USERNAME_KEY);
+                        query.whereEqualTo(User.USERNAME_KEY,userName);
+                        Log.i(TAG,"about to find in background");
+                        query.findInBackground(new FindCallback<ParseUser>() {
+                            @Override
+                            public void done(List<ParseUser> objects, ParseException e) {
+                                Log.i(TAG,"in done..");
+                                ParseUser user = objects.get(0);
+                                Log.i(TAG,"User: " + user.getUsername());
+                                users.add(user);
+                                profileAdapter.notifyDataSetChanged();
+
+                            }
+                        });
                     }
                 });
             }
         });
     }
+
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -214,10 +256,10 @@ public class SearchFragment extends Fragment {
 
                 locationName = place.getName();
                 Log.i(TAG, "set location name: " + locationName);
-                rvResults.setAdapter(adapter);
+                rvResults.setAdapter(postsAdapter);
                 rvResults.setLayoutManager(new LinearLayoutManager(getContext()));
                 postsList.clear();
-                adapter.notifyDataSetChanged();
+                postsAdapter.notifyDataSetChanged();
                 queryPosts();
             }
 
@@ -252,8 +294,37 @@ public class SearchFragment extends Fragment {
                     Log.i(TAG,"Post: " + post.getDescription() + ", username: " + post.getUser().getUsername());
                 }
                 postsList.addAll(posts);
-                adapter.notifyDataSetChanged();
+                postsAdapter.notifyDataSetChanged();
             }
         });
+    }
+
+    private void queryUsers(){
+        Log.i(TAG,"in queryUsers");
+        ParseQuery<User> query = ParseQuery.getQuery(User.class);
+        query.include(User.USERNAME_KEY);
+        //only include user with the same name typed
+        query.whereEqualTo(User.USERNAME_KEY, userName);
+        query.setLimit(20);
+        query.findInBackground(new FindCallback<User>() {
+            @Override
+            public void done(List<User> objects, ParseException e) {
+                if(e != null){
+                    Log.e(TAG,"Issue getting user profile");
+                    return;
+                }
+                //FIX ME: how to get the relation to the other users in the app
+                ParseObject userObj = objects.get(0);
+                ParseRelation relation = ParseUser.getCurrentUser().getRelation(User.USERNAME_KEY);
+                for(User user: objects){
+                    Log.i(TAG,"user: " + user.getUsername());
+                }
+                users.addAll(users);
+                profileAdapter.notifyDataSetChanged();
+            }
+        });
+//        Fragment fragment = new ProfileFragment(ParseUser.g);
+//        FragmentManager fragmentManager = getSupportFragmentManager();
+//        fragmentManager.beginTransaction().replace(R.id.relativeLayout, fragment).commit();
     }
 }
