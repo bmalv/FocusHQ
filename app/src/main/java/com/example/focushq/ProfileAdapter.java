@@ -9,9 +9,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.focushq.fragments.ProfileFragment;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
 
@@ -59,6 +63,12 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
 
         @Override
         public void onClick(View v) {
+            Log.i("ProfileAdapter","profile was clicked");
+            ParseUser author = users.get(0);
+            Fragment fragment = new ProfileFragment(author);
+            AppCompatActivity activity = (AppCompatActivity) v.getContext();
+            FragmentManager fragmentManager = activity.getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.flContainer, fragment).commit();
 
         }
 

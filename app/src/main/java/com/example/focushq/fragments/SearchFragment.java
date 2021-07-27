@@ -183,7 +183,6 @@ public class SearchFragment extends Fragment {
                                 Log.i(TAG,"User: " + user.getUsername());
                                 users.add(user);
                                 profileAdapter.notifyDataSetChanged();
-
                             }
                         });
                     }
