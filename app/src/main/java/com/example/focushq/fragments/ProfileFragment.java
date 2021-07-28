@@ -47,7 +47,7 @@ public class ProfileFragment extends Fragment {
     private TextView tvUsername;
     private ImageView ivProfileImage;
     private Button btnFollow;
-    ParseUser user;
+    private ParseUser user;
 
     public ProfileFragment() {
         // Required empty public constructor

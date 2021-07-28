@@ -10,10 +10,25 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.parse.FindCallback;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
+
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -30,6 +45,8 @@ public class LoginActivity extends AppCompatActivity {
 
         //checking if user is already signed in
         if(ParseUser.getCurrentUser() != null){
+            //Query users get all the current users from the app
+            queryUsers();
             //user is already signed in show main activity
             goMainActivity();
         }
@@ -66,6 +83,8 @@ public class LoginActivity extends AppCompatActivity {
                         if (e == null) {
                             // Hooray! Let them use the app now.
                             Log.d(TAG,"Sign up success!");
+                            //Query users get all the current users from the app
+                            queryUsers();
                             goMainActivity();
                             Toast.makeText(LoginActivity.this, "Success!", Toast.LENGTH_SHORT).show();
                         } else {
@@ -78,8 +97,28 @@ public class LoginActivity extends AppCompatActivity {
                 });
             }
         });
+    }
 
-
+    public void queryUsers(){
+        ParseQuery<ParseUser> query = ParseUser.getQuery();
+        query.include(User.USERNAME_KEY);
+        query.findInBackground(new FindCallback<ParseUser>() {
+            @Override
+            public void done(List<ParseUser> objects, ParseException e) {
+                Log.i(TAG,"objects list size: " + objects.size());
+                File file = new File(getFilesDir(),"currentUsers.txt");
+                List<String> names = new ArrayList<>();
+                for(ParseUser obj: objects){
+                    names.add(obj.getUsername());
+                }
+                try {
+                    FileUtils.writeLines(file,names);
+                    Log.i(TAG,"usernames written: " + names.toString());
+                } catch (IOException ioException) {
+                    Log.i(TAG, "error: " + ioException.getLocalizedMessage());
+                }
+            }
+        });
     }
 
     private void loginUser(String username, String password) {
@@ -96,6 +135,8 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 /*navigate to the main activity if the user has signed in properly */
                 Log.i(TAG,"Login Success!");
+                //Query users get all the current users from the app
+                queryUsers();
                 goMainActivity();
                 Toast.makeText(LoginActivity.this, "Success!", Toast.LENGTH_SHORT).show();
             }

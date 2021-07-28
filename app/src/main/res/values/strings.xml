@@ -2,12 +2,4 @@
     <string name="app_name">Focus HQ</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-
-    <string-array name="usernames_array">
-        <item>Bianca</item>
-        <item>BobTheBuilder</item>
-        <item>mar</item>
-        <item>RandomUser</item>
-        <item>RandomUser2</item>
-    </string-array>
 </resources>
