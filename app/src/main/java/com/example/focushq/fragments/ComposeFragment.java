@@ -257,8 +257,16 @@ public class ComposeFragment extends Fragment {
                 ParseUser currentUser = ParseUser.getCurrentUser();
                 //save the post to Parse fields
                 savePost(description,currentUser);
+                goToPosts();
+
             }
         });
+    }
+
+    //method go to post fragment
+    public void goToPosts(){
+        Fragment fragment = new PostsFragment();
+        getChildFragmentManager().beginTransaction().replace(R.id.fragment_compose, fragment).commit();
     }
 
     //function will open up the user's gallery
