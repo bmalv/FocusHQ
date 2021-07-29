@@ -34,6 +34,7 @@
         android:layout_marginStart="19dp"
         android:layout_marginTop="45dp"
         android:layout_toEndOf="@+id/ivProfileImage"
+        android:fontFamily="sans-serif-smallcaps"
         android:textColor="@color/black"
         android:textSize="20sp"
         tools:text="Bianca" />
@@ -44,7 +45,8 @@
         android:layout_below="@+id/ivProfileImage"
         android:layout_alignParentStart="true"
         android:layout_marginTop="10dp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="16dp">
 
         <ImageView
             android:id="@+id/ivImage"
@@ -58,6 +60,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
+            android:fontFamily="sans-serif-smallcaps"
             android:textSize="16sp"
             tools:text="Location Name" />
 
@@ -70,6 +73,14 @@
             android:textColor="@color/black"
             android:textSize="14sp"
             tools:text="this is my caption for this post!" />
+
+        <View
+            android:id="@+id/separator"
+            android:layout_width="match_parent"
+            android:layout_height="2dip"
+            android:layout_marginTop="10dp"
+            android:background="@color/sage_green"
+            android:labelFor="@id/tvDescription" />
 
     </LinearLayout>
 

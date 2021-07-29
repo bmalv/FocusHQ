@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.parse.ParseClassName;
 import com.parse.ParseFile;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
@@ -14,7 +15,7 @@ public class Post extends ParseObject {
 
     public static final String IMAGE_KEY = "image";
     public static final String USER_KEY = "user";
-    public static final String LOCATION_KEY = "location";
+    public static final String LOCATION_ID_KEY = "locationID";
     public static final String LOCATION_NAME_KEY = "locationName";
     public static final String KEY_DESCRIPTION = "description";
     public static final String CREATED_AT_KEY = "createdAt";
@@ -37,6 +38,10 @@ public class Post extends ParseObject {
 
     public String getDescription(){
         return getString(KEY_DESCRIPTION);
+    }
+
+    public String getLocationId(){
+        return getString(LOCATION_ID_KEY);
     }
 
     public ParseFile getProfileImage(){
@@ -103,6 +108,10 @@ public class Post extends ParseObject {
     //function sets the description
     public void setDescription(String description){
         put(KEY_DESCRIPTION,description);
+    }
+
+    public void setLocationID(String placeID){
+        put(LOCATION_ID_KEY,placeID);
     }
 
 

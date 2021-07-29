@@ -98,7 +98,9 @@ public class PostsDetailsActivity extends AppCompatActivity implements OnMapRead
         tvDescription.setText(post.getDescription());
         tvLocationName.setText(post.getLocationName());
 
-        setPlaceID();
+        placeID = tvLocationName.getText().toString();
+        Log.i("PostsDetailsActivity", "placeID before setting: " + placeID);
+     //   fetchPlace();
 
         ParseFile pic = post.getProfileImage();
         if (pic != null) {
@@ -128,60 +130,20 @@ public class PostsDetailsActivity extends AppCompatActivity implements OnMapRead
 
     }
 
-    //function makes a FetchPlaceRequest and sets the placeID
-    //to the location name given by the user
-    public void setPlaceID() {
-        FetchPlaceRequest request = new FetchPlaceRequest() {
+    public void fetchPlace(){
+        List<Place.Field> placeFields = Arrays.asList(Place.Field.ID);
+        FetchPlaceRequest request = FetchPlaceRequest.builder(post.getLocationId(),placeFields).build();
 
-            @NonNull
-            @Override
-            public String getPlaceId() {
-                //returns the ID of the place to be requested
-                return tvLocationName.getText().toString();
+        //FIXME: can not find post
+        placesClient.fetchPlace(request).addOnSuccessListener((fetchPlaceResponse -> {
+            place = fetchPlaceResponse.getPlace();
+            Log.i("PostsDetailsActivity", "place found: " + place.toString());
+        })).addOnFailureListener(exception -> {
+            if(exception instanceof ApiException){
+                ApiException apiException = (ApiException) exception;
+                Log.e("PostsDetailsActivity", "Place not found: " + apiException.getMessage());
             }
-
-            @NonNull
-            @Override
-            public List<Place.Field> getPlaceFields() {
-                //Returns the Place.Field list to be requested.
-                List<Place.Field> placeFields = Arrays.asList(Place.Field.ID,Place.Field.NAME);
-                return placeFields;
-            }
-
-            @Nullable
-            @Override
-            public AutocompleteSessionToken getSessionToken() {
-                //Returns the AutocompleteSessionToken used for sessionizing
-                //multiple instances ofFindAutocompletePredictionsRequest.
-                return null;
-            }
-
-            @Nullable
-            @Override
-            public CancellationToken getCancellationToken() {
-                //Returns the CancellationToken used by PlacesClient to
-                // cancel any queued requests.
-                return null;
-            }
-        };
-
-        if (request == null) {
-            Log.i("PostsDetailsActivity", "request is null");
-        } else {
-            Log.i("PostsDetailsActivity", "request place ID: " + request.getPlaceId());
-            placeID = request.getPlaceId();
-            placesClient.fetchPlace(request).addOnSuccessListener((response) ->{
-                place = response.getPlace();
-                Log.i("PostsDetailsActivity", "place set to: " + place.getName());
-            }).addOnFailureListener((exception) ->{
-                if(exception instanceof ApiException){
-                    ApiException apiException = (ApiException) exception;
-                    int statusCode = apiException.getStatusCode();
-                    Log.e("PostsDetailsActivity", "Place not found: " + exception.getMessage()
-                            + " status code: " + statusCode);
-                }
-            });
-        }
+        });
     }
 
     @Override

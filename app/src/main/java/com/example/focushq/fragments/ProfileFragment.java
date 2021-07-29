@@ -23,6 +23,8 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.example.focushq.Post;
 import com.example.focushq.PostsAdapter;
+import com.example.focushq.ProfileAdapter;
+import com.example.focushq.ProfilePostsAdapter;
 import com.example.focushq.R;
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -42,7 +44,8 @@ public class ProfileFragment extends Fragment {
     public static final String TAG = "ProfileFragment";
 
     private RecyclerView rvPosts;
-    private PostsAdapter adapter;
+   // private PostsAdapter adapter;
+    private ProfilePostsAdapter profilePostsAdapter;
     private List<Post> postsList;
     private TextView tvUsername;
     private ImageView ivProfileImage;
@@ -77,7 +80,8 @@ public class ProfileFragment extends Fragment {
         btnFollow = view.findViewById(R.id.btnFollow);
 
         postsList = new ArrayList<>();
-        adapter = new PostsAdapter(getContext(), postsList);
+       // adapter = new PostsAdapter(getContext(), postsList);
+        profilePostsAdapter = new ProfilePostsAdapter(getContext(),postsList);
 
         tvUsername.setText(user.getUsername());
         ParseFile profileImage = user.getParseFile("profileImage");
@@ -114,7 +118,7 @@ public class ProfileFragment extends Fragment {
         });
 
         Log.i(TAG,"user profile displaying: " + user.getUsername());
-        rvPosts.setAdapter(adapter);
+        rvPosts.setAdapter(profilePostsAdapter);
         rvPosts.setLayoutManager(new GridLayoutManager(getContext(), 2));
         queryPosts();
     }
@@ -139,7 +143,7 @@ public class ProfileFragment extends Fragment {
                     Log.i(TAG,"Post: " + post.getDescription() + ", username: " + post.getUser().getUsername());
                 }
                 postsList.addAll(posts);
-                adapter.notifyDataSetChanged();
+                profilePostsAdapter.notifyDataSetChanged();
             }
         });
     }

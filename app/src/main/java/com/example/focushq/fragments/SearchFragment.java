@@ -92,6 +92,7 @@ public class SearchFragment extends Fragment {
     private AutoCompleteTextView tvAuto;
     private AutocompleteSupportFragment autocompleteFragment;
     private Button btnSearch;
+    private PlacesClient placesClient;
 
     public SearchFragment() {
         // Required empty public constructor
@@ -121,6 +122,11 @@ public class SearchFragment extends Fragment {
         // Initialize the AutocompleteSupportFragment.
         autocompleteFragment = (AutocompleteSupportFragment)
                 getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+
+        //initialize the SDK
+        Places.initialize(getContext().getApplicationContext(), getResources().getString(R.string.MY_KEY));
+        //create a new PlacesClient instance
+        placesClient = Places.createClient(getContext());
 
         // Initialize the Autocomplete text view
         tvAuto = (AutoCompleteTextView) view.findViewById(R.id.autoUsers);
@@ -162,10 +168,10 @@ public class SearchFragment extends Fragment {
                 android.R.layout.simple_list_item_1, usernames);
         tvAuto.setAdapter(adapter);
 
-        rvResults.setAdapter(profileAdapter);
-        rvResults.setLayoutManager(new LinearLayoutManager(getContext()));
         users.clear();
         profileAdapter.notifyDataSetChanged();
+        rvResults.setAdapter(profileAdapter);
+        rvResults.setLayoutManager(new LinearLayoutManager(getContext()));
 
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override

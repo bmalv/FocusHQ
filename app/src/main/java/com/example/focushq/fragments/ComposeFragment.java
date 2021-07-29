@@ -10,6 +10,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageDecoder;
 import android.graphics.Matrix;
+import android.location.Address;
+import android.location.Geocoder;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
@@ -53,6 +55,7 @@ import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.parse.ParseException;
 import com.parse.ParseFile;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
@@ -92,6 +95,7 @@ public class ComposeFragment extends Fragment {
     private File file;
     private PlacesClient placesClient;
     private String locationName;
+    private Place selectedPlace;
 
     //store images
     private ArrayList<Uri> imageUris;
@@ -306,6 +310,7 @@ public class ComposeFragment extends Fragment {
         ParseFile parseFile = new ParseFile(file);
         post.setImage(parseFile);
         post.setUser(currentUser);
+        post.setLocationID(selectedPlace.getId());
         post.saveInBackground(new SaveCallback() {
         @Override
         public void done(ParseException e) {
@@ -418,35 +423,9 @@ public class ComposeFragment extends Fragment {
             public void onPlaceSelected(@NonNull Place place) {
                 // TODO: Get info about the selected place.
                 Log.i(TAG, "Place: " + place.getName() + " place ID: " + place.getId());
-                FetchPlaceRequest request = new FetchPlaceRequest() {
-                    @NonNull
-                    @Override
-                    public String getPlaceId() {
-                        return place.getId();
-                    }
-
-                    @NonNull
-                    @Override
-                    public List<Place.Field> getPlaceFields() {
-                        return null;
-                    }
-
-                    @Nullable
-                    @Override
-                    public AutocompleteSessionToken getSessionToken() {
-                        return null;
-                    }
-
-                    @Nullable
-                    @Override
-                    public CancellationToken getCancellationToken() {
-                        return null;
-                    }
-                };
+                selectedPlace = place;
                 locationName = place.getName();
             }
-
-
             @Override
             public void onError(@NonNull Status status) {
                 // TODO: Handle the error.
