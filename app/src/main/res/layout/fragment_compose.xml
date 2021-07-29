@@ -4,86 +4,135 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.ComposeFragment"
-    android:background="@color/white">
+    android:background="@color/white"
+    android:padding="16dp"
+    tools:context=".fragments.ComposeFragment">
 
-
-    <ImageSwitcher
-        android:id="@+id/ivImage"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        tools:src="@tools:sample/avatars" />
-
-    <Button
-        android:id="@+id/btnCaptureImage"
-        android:layout_width="62dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="false"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="216dp"
-        android:background="#1BABEC"
-        app:icon="@android:drawable/ic_menu_camera"
-        app:iconTint="#E9EBEC" />
+        android:id="@+id/relative"
+        android:background="@color/sage_green" >
 
-    <LinearLayout
-        android:layout_width="363dp"
-        android:layout_height="130dp"
-        android:layout_below="@+id/btnCaptureImage"
-        android:layout_alignParentStart="false"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="20dp"
-        android:orientation="vertical">
-
-        <fragment
-            android:id="@+id/autocomplete_fragment"
-            android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+        <ImageSwitcher
+            android:id="@+id/ivImage"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="250dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="20dp"
+            android:padding="16dp"
+            tools:src="@tools:sample/avatars" />
 
-        <EditText
-            android:id="@+id/etDescription"
+        <View
+            android:id="@+id/separator"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="Description..." />
+            android:layout_height="2dip"
+            android:layout_below="@+id/ivImage"
+            android:layout_marginTop="0dp"
+            android:background="@color/sage_green" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
-    <ImageButton
-        android:id="@+id/btnPublish"
-        android:layout_width="44dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginTop="26dp"
-        android:layout_marginEnd="19dp"
-        android:layout_marginBottom="63dp"
-        android:background="#74B7EC"
-        android:src="@android:drawable/ic_menu_add"
-        app:tint="#1356DD" />
-
-    <Button
-        android:id="@+id/btnPrev"
-        android:layout_width="63dp"
-        android:layout_height="wrap_content"
+    <ScrollView
+        android:layout_width="389dp"
+        android:layout_height="406dp"
+        android:layout_below="@id/relative"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="25dp"
-        android:layout_marginTop="217dp"
-        android:layout_marginEnd="87dp"
-        android:layout_toStartOf="@+id/btnCaptureImage"
-        app:icon="@android:drawable/ic_media_rew" />
+        android:layout_alignParentBottom="true">
 
-    <Button
-        android:id="@+id/btnNext"
-        android:layout_width="63dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginStart="87dp"
-        android:layout_marginTop="217dp"
-        android:layout_marginEnd="25dp"
-        android:layout_toEndOf="@+id/btnCaptureImage"
-        app:icon="@android:drawable/ic_media_ff" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:id="@+id/btnCaptureImage"
+                    android:layout_width="62dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="false"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="161dp"
+                    app:icon="@android:drawable/ic_menu_camera"
+                    app:iconTint="#CCFF90" />
+
+                <Button
+                    android:id="@+id/btnPrev"
+                    android:layout_width="68dp"
+                    android:layout_height="38dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="false"
+                    android:layout_marginStart="27dp"
+                    android:layout_marginTop="10dp"
+                    app:icon="@android:drawable/ic_media_rew"
+                    app:iconTint="#CCFF90" />
+
+                <Button
+                    android:id="@+id/btnNext"
+                    android:layout_width="68dp"
+                    android:layout_height="38dp"
+                    android:layout_alignParentTop="false"
+                    android:layout_alignParentEnd="false"
+                    android:layout_gravity="end"
+                    android:layout_marginStart="65dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_toEndOf="@+id/btnCaptureImage"
+                    app:icon="@android:drawable/ic_media_ff"
+                    app:iconTint="#CCFF90" />
+
+                <View
+                    android:id="@+id/separator2"
+                    android:layout_width="match_parent"
+                    android:layout_height="2dip"
+                    android:layout_below="@+id/btnCaptureImage"
+                    android:layout_marginTop="15dp"
+                    android:background="@color/sage_green" />
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/separator2"
+                android:layout_alignParentStart="false"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
+
+                <fragment
+                    android:id="@+id/autocomplete_fragment"
+                    android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/etDescription"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Description..." />
+
+                <ImageButton
+                    android:id="@+id/btnPublish"
+                    android:layout_width="60dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="end"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginBottom="63dp"
+                    android:background="@color/sage_green"
+                    android:src="@android:drawable/ic_menu_add"
+                    app:tint="#CCFF90" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </RelativeLayout>

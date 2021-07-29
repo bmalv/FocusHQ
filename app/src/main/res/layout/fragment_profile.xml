@@ -33,7 +33,7 @@
         android:id="@+id/rvPosts"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/tvUsername"
+        android:layout_below="@id/separator"
         android:layout_alignParentStart="false"
         android:layout_alignParentTop="false"
         android:layout_centerHorizontal="true"
@@ -50,4 +50,12 @@
         android:layout_marginEnd="5dp"
         android:contextClickable="false"
         android:textSize="8sp" />
+
+    <View
+        android:id="@+id/separator"
+        android:layout_width="match_parent"
+        android:layout_height="2dip"
+        android:layout_marginTop="10dp"
+        android:background="@color/sage_green"
+        android:layout_below="@+id/btnFollow"/>
 </RelativeLayout>
