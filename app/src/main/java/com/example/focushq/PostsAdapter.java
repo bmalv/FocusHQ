@@ -1,19 +1,30 @@
 package com.example.focushq;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.Image;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ReportFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.focushq.fragments.ReplyFragment;
+import com.example.focushq.fragments.SearchFragment;
 import com.parse.ParseFile;
 
 import org.parceler.Parcels;
@@ -25,6 +36,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
 
     private Context context;
     private List<Post> posts;
+    private ReplyAdapter replyAdapter;
 
     //constructor
     public PostsAdapter(Context context, List<Post> posts){
@@ -66,6 +78,8 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         private TextView tvLocationName;
         private ImageView ivImage;
         private ImageView ivProfileImage;
+        private ImageButton ivReply;
+        private ImageButton ivLike;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -75,6 +89,8 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             tvLocationName = itemView.findViewById(R.id.tvLocationName);
             ivImage = itemView.findViewById(R.id.ivImage);
             ivProfileImage = itemView.findViewById(R.id.ivProfileImage);
+            ivReply = itemView.findViewById(R.id.ivReply);
+            ivLike = itemView.findViewById(R.id.ivLike);
             itemView.setOnClickListener(this);
         }
 
@@ -100,6 +116,26 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
                 Log.d("PostsAdapter", "loaded profile pic");
                 Glide.with(context).load(profileImage.getUrl()).circleCrop().into(ivProfileImage);
             }
+
+            ivLike.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.i("PostsAdapter", "like button clicked");
+                    ivLike.setBackground(ContextCompat.getDrawable(context,R.drawable.ufi_heart_active));
+                }
+            });
+
+            ivReply.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.i("PostsAdapter", "reply button clicked");
+                    //go to a reply view
+                    Fragment fragment = new ReplyFragment();
+                    AppCompatActivity activity = (AppCompatActivity) itemView.getContext();
+                    FragmentManager fragmentManager = activity.getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.flContainer,fragment).commit();
+                }
+            });
 
         }
 

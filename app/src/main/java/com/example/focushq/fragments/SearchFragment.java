@@ -92,6 +92,7 @@ public class SearchFragment extends Fragment {
     private AutoCompleteTextView tvAuto;
     private AutocompleteSupportFragment autocompleteFragment;
     private Button btnSearch;
+    private String[] usernames;
     private PlacesClient placesClient;
 
     public SearchFragment() {
@@ -163,7 +164,7 @@ public class SearchFragment extends Fragment {
 
     //method finds the profile of the user the current user is searching for
     public void onSearch(){
-        String[] usernames = getNames();
+        usernames = getNames();
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_list_item_1, usernames);
         tvAuto.setAdapter(adapter);
@@ -206,7 +207,6 @@ public class SearchFragment extends Fragment {
     public String[] getNames(){
         File file = new File(getContext().getFilesDir(),"currentUsers.txt");
         List<String> names = null;
-        String[] usernames = null;
         try {
             //read names from file
             names = new ArrayList<>(FileUtils.readLines(file, Charset.defaultCharset()));

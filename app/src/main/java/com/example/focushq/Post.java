@@ -8,7 +8,9 @@ import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @ParseClassName("Post")
 public class Post extends ParseObject {
@@ -20,6 +22,7 @@ public class Post extends ParseObject {
     public static final String KEY_DESCRIPTION = "description";
     public static final String CREATED_AT_KEY = "createdAt";
     public static final String PROFILE_IMAGE_KEY = "profileImage";
+    public static final String REPLY_KEY = "replies";
 
     //function retrieves the image under the image key
     public ParseFile getImage(){
@@ -42,6 +45,10 @@ public class Post extends ParseObject {
 
     public String getLocationId(){
         return getString(LOCATION_ID_KEY);
+    }
+
+    public List<String> getReplies(){
+        return getList(REPLY_KEY);
     }
 
     public ParseFile getProfileImage(){
@@ -113,6 +120,7 @@ public class Post extends ParseObject {
     public void setLocationID(String placeID){
         put(LOCATION_ID_KEY,placeID);
     }
+
 
 
 }

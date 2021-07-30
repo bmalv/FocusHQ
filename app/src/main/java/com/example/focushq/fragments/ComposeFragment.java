@@ -339,7 +339,7 @@ public class ComposeFragment extends Fragment {
         String[] projection = { MediaStore.Images.Media.DATA };
         Cursor cursor = getContext().getContentResolver().query(uri, projection, null, null, null);
         if (cursor == null) return null;
-        int column_index =             cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
         cursor.moveToFirst();
         String s = cursor.getString(column_index);
         cursor.close();

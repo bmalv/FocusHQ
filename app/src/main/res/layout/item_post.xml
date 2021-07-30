@@ -55,6 +55,32 @@
             android:scaleType="centerCrop"
             tools:srcCompat="@tools:sample/avatars" />
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageButton
+                android:id="@+id/ivReply"
+                android:layout_width="30dp"
+                android:layout_height="20dp"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="13dp"
+                android:layout_marginTop="4dp"
+                android:layout_toEndOf="@+id/ivLike"
+                android:background="@drawable/ufi_comment"
+                android:backgroundTint="@color/sage_green" />
+
+            <ImageButton
+                android:id="@+id/ivLike"
+                android:layout_width="30dp"
+                android:layout_height="20dp"
+                android:layout_alignParentStart="false"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/ufi_heart"
+                android:backgroundTint="@color/sage_green" />
+
+        </RelativeLayout>
+
         <TextView
             android:id="@+id/tvLocationName"
             android:layout_width="match_parent"
@@ -81,6 +107,7 @@
             android:layout_marginTop="10dp"
             android:background="@color/sage_green"
             android:labelFor="@id/tvDescription" />
+
 
     </LinearLayout>
 
