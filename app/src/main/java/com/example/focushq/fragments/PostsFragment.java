@@ -105,6 +105,10 @@ public class PostsFragment extends Fragment {
                 // for debugging purposes let's print every post description to logcat
                 for (Post post : posts) {
                     Log.i(TAG, "Post: " + post.getDescription() + ", username: " + post.getUser().getUsername());
+                    if(post.getReplies() == null){
+                        post.setReplyList(new ArrayList<>());
+                    }
+                    Log.i(TAG,"list: " + post.getReplies());
                 }
 
                 // save received posts to list and notify adapter of new data

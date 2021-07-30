@@ -1,25 +1,44 @@
 package com.example.focushq.fragments;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.focushq.Post;
+import com.example.focushq.PostsDetailsActivity;
 import com.example.focushq.R;
+import com.example.focushq.RepliesActivity;
 import com.example.focushq.Reply;
 import com.example.focushq.ReplyAdapter;
+import com.example.focushq.User;
 import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
+import com.parse.SaveCallback;
+
+import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,10 +46,19 @@ import java.util.List;
 public class ReplyFragment extends Fragment {
 
     private ReplyAdapter replyAdapter;
-    private RecyclerView rvReply;
     private List<String> replies;
     //post belonging to that reply
     private Post post;
+    private ImageView ivProfileImage;
+    private TextView tvUsername;
+    private EditText etComment;
+    private ImageButton btnPublish;
+
+    public ReplyFragment(){}
+
+    public ReplyFragment(Post post){
+        this.post = post;
+    }
 
 
     @Nullable
@@ -45,19 +73,61 @@ public class ReplyFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        rvReply = view.findViewById(R.id.rvReply);
 
         replies = new ArrayList<>();
 
-        Reply reply = new Reply();
-        post = reply.getPost();
+        ivProfileImage = view.findViewById(R.id.ivProfileImage);
+        tvUsername = view.findViewById(R.id.tvUsername);
+        etComment = view.findViewById(R.id.etComment);
+        btnPublish = view.findViewById(R.id.btnPublish);
 
-        replyAdapter = new ReplyAdapter(getContext(),replies,post);
+        ParseUser currentUser = ParseUser.getCurrentUser();
 
-        //set the adapter
-        rvReply.setAdapter(replyAdapter);
-        rvReply.setLayoutManager(new LinearLayoutManager(getContext()));
-        replies.addAll(post.getReplies());
-        replyAdapter.notifyDataSetChanged();
+        ParseFile image = currentUser.getParseFile(User.PROFILE_IMAGE_KEY);
+        if(image != null){
+            Glide.with(getContext()).load(image.getUrl()).circleCrop().into(ivProfileImage);
+        }
+
+        tvUsername.setText(currentUser.getUsername());
+
+        btnPublish.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("ReplyFragment", "publish button clicked!");
+                String comment = etComment.getText().toString();
+
+                //comment can not be empty
+                if(comment.isEmpty()){
+                    Toast.makeText(getContext(),"Comment can not be empty",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Log.i("ReplyFragment","post list: " + post.getReplies().toString());
+                post.getReplies().add(comment);
+                post.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        if(e == null){
+                            Log.i("ReplyFragment","updated post list: " + post.getReplies().toString());
+                            post.setReplyList(post.getReplies());
+                            //replyAdapter.notifyDataSetChanged();
+                        }else{
+                            Log.i("ReplyFragment","error");
+                        }
+                    }
+                });
+                goToReplyDetails();
+            }
+        });
+
     }
+
+    private void goToReplyDetails(){
+        Log.i("ReplyFragment","going to replies activity");
+        Fragment fragment = new RepliesActivity(post);
+        AppCompatActivity activity = (AppCompatActivity) getContext();
+        FragmentManager fragmentManager = activity.getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.flContainer,fragment).commit();
+    }
+
 }

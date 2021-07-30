@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp">
+
+    <ImageButton
+        android:id="@+id/ivReply"
+        android:layout_width="37dp"
+        android:layout_height="39dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="13dp"
+        android:layout_marginTop="35dp"
+        android:background="@drawable/ufi_comment"
+        android:backgroundTint="@color/black" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvReply"
+        android:layout_width="373dp"
+        android:layout_height="577dp"
+        android:layout_below="@id/separator"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="66dp"
+        tools:layout_editor_absoluteX="1dp"
+        tools:layout_editor_absoluteY="1dp" />
+
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="138dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="43dp"
+        android:layout_marginEnd="191dp"
+        android:layout_toEndOf="@+id/ivReply"
+        android:fontFamily="sans-serif-smallcaps"
+        android:text="Replies"
+        android:textAlignment="textStart"
+        android:textColor="@color/black"
+        android:textSize="24sp" />
+
+    <View
+        android:id="@+id/separator"
+        android:layout_width="match_parent"
+        android:layout_height="2dip"
+        android:layout_below="@+id/text"
+        android:layout_marginTop="10dp"
+        android:background="@color/sage_green" />
+
+</RelativeLayout>

@@ -121,6 +121,10 @@ public class Post extends ParseObject {
         put(LOCATION_ID_KEY,placeID);
     }
 
+    public void setReplyList(List<String> replyList){
+        put(REPLY_KEY,replyList);
+    }
+
 
 
 }

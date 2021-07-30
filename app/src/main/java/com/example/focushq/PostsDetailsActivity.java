@@ -61,17 +61,17 @@ public class PostsDetailsActivity extends AppCompatActivity implements OnMapRead
     private Post post;
 
     //view objects
-    TextView tvUsername;
-    TextView tvDescription;
-    TextView tvLocationName;
-    ImageView ivProfileImage;
-    ImageView ivImage;
-    MapView mvMap;
+    private TextView tvUsername;
+    private TextView tvDescription;
+    private TextView tvLocationName;
+    private ImageView ivProfileImage;
+    private ImageView ivImage;
+    private MapView mvMap;
 
     //sdk client variable
-    PlacesClient placesClient;
-    Place place;
-    String placeID;
+    private PlacesClient placesClient;
+    private Place place;
+    private String placeID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

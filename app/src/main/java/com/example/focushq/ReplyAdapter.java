@@ -18,6 +18,9 @@ import com.parse.ParseFile;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import org.w3c.dom.Comment;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ViewHolder> {
@@ -29,6 +32,9 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ViewHolder> 
 
     public ReplyAdapter(Context context, List<String> replyList, Post post){
         this.context = context;
+        if(replyList == null){
+            replyList = new ArrayList<>();
+        }
         this.replyList = replyList;
         this.post = post;
     }
@@ -56,17 +62,17 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ViewHolder> 
 
         private ImageView ivProfileImage;
         private TextView tvUsername;
-        private EditText etComment;
+        private TextView tvComment;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             ivProfileImage = itemView.findViewById(R.id.ivProfileImage);
             tvUsername = itemView.findViewById(R.id.tvUsername);
-            etComment = itemView.findViewById(R.id.etComment);
+            tvComment = itemView.findViewById(R.id.tvComment);
         }
 
         public void bind(String reply) {
-            etComment.setText(reply);
+            tvComment.setText(reply);
             tvUsername.setText(ParseUser.getCurrentUser().getUsername());
 
             ParseFile image = ParseUser.getCurrentUser().getParseFile("profileImage");
@@ -75,17 +81,19 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ViewHolder> 
                 Glide.with(context).load(image.getUrl()).circleCrop().into(ivProfileImage);
             }
 
-            post.add("replies",reply);
-            post.saveInBackground(new SaveCallback() {
-                @Override
-                public void done(ParseException e) {
-                    if(e == null){
-                        Log.i("ReplyAdapter","success!");
-                    }else{
-                        Log.i("ReplyAdapter","error adding reply");
-                    }
-                }
-            });
+//            post.getReplies().add(reply);
+//            post.saveInBackground(new SaveCallback() {
+//                @Override
+//                public void done(ParseException e) {
+//                    if(e == null){
+//                        Log.i("ReplyAdapter","success!");
+//                        Log.i("ReplyAdapter","list size: " + getItemCount());
+//                        Log.i("ReplyAdapter", "updated reply list: " + post.getReplies().toString());
+//                    }else{
+//                        Log.i("ReplyAdapter","error adding reply");
+//                    }
+//                }
+//            });
         }
     }
 }

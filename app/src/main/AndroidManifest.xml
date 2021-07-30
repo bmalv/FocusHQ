@@ -26,6 +26,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/MY_KEY"/>
         <activity android:name=".PostsDetailsActivity"></activity>
+        <activity android:name=".RepliesActivity"></activity>
         <activity
             android:name=".LoginActivity"
             android:parentActivityName=".MainActivity">

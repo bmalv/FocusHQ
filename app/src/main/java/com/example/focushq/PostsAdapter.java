@@ -130,10 +130,13 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
                 public void onClick(View v) {
                     Log.i("PostsAdapter", "reply button clicked");
                     //go to a reply view
-                    Fragment fragment = new ReplyFragment();
-                    AppCompatActivity activity = (AppCompatActivity) itemView.getContext();
-                    FragmentManager fragmentManager = activity.getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.flContainer,fragment).commit();
+                    int pos = getAdapterPosition();
+                    if(pos != RecyclerView.NO_POSITION){
+                        Fragment fragment = new RepliesActivity(posts.get(pos));
+                        AppCompatActivity activity = (AppCompatActivity) itemView.getContext();
+                        FragmentManager fragmentManager = activity.getSupportFragmentManager();
+                        fragmentManager.beginTransaction().replace(R.id.flContainer,fragment).commit();
+                    }
                 }
             });
 

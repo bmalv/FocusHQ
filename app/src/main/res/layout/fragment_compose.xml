@@ -128,7 +128,7 @@
                     android:layout_marginBottom="63dp"
                     android:background="@color/sage_green"
                     android:src="@drawable/circle"
-                    android:tint="#CCFF90" />
+                    app:tint="#CCFF90" />
 
             </LinearLayout>
 
