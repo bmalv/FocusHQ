@@ -45,8 +45,8 @@ import java.util.List;
 
 public class ReplyFragment extends Fragment {
 
-    private ReplyAdapter replyAdapter;
-    private List<String> replies;
+    public static final String TAG = "ReplyFragment";
+
     //post belonging to that reply
     private Post post;
     private ImageView ivProfileImage;
@@ -73,9 +73,6 @@ public class ReplyFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-
-        replies = new ArrayList<>();
-
         ivProfileImage = view.findViewById(R.id.ivProfileImage);
         tvUsername = view.findViewById(R.id.tvUsername);
         etComment = view.findViewById(R.id.etComment);
@@ -93,7 +90,7 @@ public class ReplyFragment extends Fragment {
         btnPublish.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i("ReplyFragment", "publish button clicked!");
+                Log.i(TAG, "publish button clicked!");
                 String comment = etComment.getText().toString();
 
                 //comment can not be empty
@@ -102,17 +99,16 @@ public class ReplyFragment extends Fragment {
                             Toast.LENGTH_SHORT).show();
                     return;
                 }
-                Log.i("ReplyFragment","post list: " + post.getReplies().toString());
+                Log.i(TAG,"post list: " + post.getReplies().toString());
                 post.getReplies().add(comment);
+                post.setReplyList(post.getReplies());
                 post.saveInBackground(new SaveCallback() {
                     @Override
                     public void done(ParseException e) {
                         if(e == null){
-                            Log.i("ReplyFragment","updated post list: " + post.getReplies().toString());
-                            post.setReplyList(post.getReplies());
-                            //replyAdapter.notifyDataSetChanged();
+                            Log.i(TAG,"updated post list: " + post.getReplies().toString());
                         }else{
-                            Log.i("ReplyFragment","error");
+                            Log.i(TAG,"error");
                         }
                     }
                 });
@@ -123,7 +119,7 @@ public class ReplyFragment extends Fragment {
     }
 
     private void goToReplyDetails(){
-        Log.i("ReplyFragment","going to replies activity");
+        Log.i(TAG,"going to replies activity");
         Fragment fragment = new RepliesActivity(post);
         AppCompatActivity activity = (AppCompatActivity) getContext();
         FragmentManager fragmentManager = activity.getSupportFragmentManager();

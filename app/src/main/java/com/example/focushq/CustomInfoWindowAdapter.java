@@ -14,11 +14,9 @@ import com.google.android.gms.maps.model.Marker;
 public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
     private final View window;
-    private Context context;
 
     public CustomInfoWindowAdapter(Context context) {
-        this.context = context;
-        window = LayoutInflater.from(context).inflate(R.layout.custom_info_window, null);
+        window = LayoutInflater.from(context.getApplicationContext()).inflate(R.layout.custom_info_window, null);
     }
 
     private void renderWindowText(Marker marker, View view){

@@ -28,15 +28,13 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ViewHolder> 
     //post that is being replied to
     private Context context;
     private List<String> replyList;
-    private Post post;
 
-    public ReplyAdapter(Context context, List<String> replyList, Post post){
+    public ReplyAdapter(Context context, List<String> replyList){
         this.context = context;
         if(replyList == null){
             replyList = new ArrayList<>();
         }
         this.replyList = replyList;
-        this.post = post;
     }
 
 
@@ -80,20 +78,6 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ViewHolder> 
                 Log.d("ReplyAdapter", "loaded profile pic");
                 Glide.with(context).load(image.getUrl()).circleCrop().into(ivProfileImage);
             }
-
-//            post.getReplies().add(reply);
-//            post.saveInBackground(new SaveCallback() {
-//                @Override
-//                public void done(ParseException e) {
-//                    if(e == null){
-//                        Log.i("ReplyAdapter","success!");
-//                        Log.i("ReplyAdapter","list size: " + getItemCount());
-//                        Log.i("ReplyAdapter", "updated reply list: " + post.getReplies().toString());
-//                    }else{
-//                        Log.i("ReplyAdapter","error adding reply");
-//                    }
-//                }
-//            });
         }
     }
 }

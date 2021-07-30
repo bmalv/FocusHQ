@@ -56,6 +56,7 @@ import java.util.List;
 public class PostsDetailsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final String MAPVIEW_BUNDLE_KEY = "MapViewBundleKey";
+    public static final String TAG = "PostsDetailsActivity";
 
     //the post to display
     private Post post;
@@ -92,14 +93,14 @@ public class PostsDetailsActivity extends AppCompatActivity implements OnMapRead
         initGoogleMaps(savedInstanceState);
 
         post = (Post) Parcels.unwrap(getIntent().getParcelableExtra(Post.class.getSimpleName()));
-        Log.i("PostsDetailsActivity", "Showing Post Details!");
+        Log.i(TAG, "Showing Post Details!");
 
         tvUsername.setText(post.getUser().getUsername());
         tvDescription.setText(post.getDescription());
         tvLocationName.setText(post.getLocationName());
 
         placeID = tvLocationName.getText().toString();
-        Log.i("PostsDetailsActivity", "placeID before setting: " + placeID);
+        Log.i(TAG, "placeID before setting: " + placeID);
      //   fetchPlace();
 
         ParseFile pic = post.getProfileImage();
@@ -119,7 +120,7 @@ public class PostsDetailsActivity extends AppCompatActivity implements OnMapRead
         ivProfileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i("PostsDetailsActivity", "profile image was clicked");
+                Log.i(TAG, "profile image was clicked");
                 //let user travel to that users profile
                 ParseUser author = post.getUser();
                 Fragment fragment = new ProfileFragment(author);
@@ -137,11 +138,11 @@ public class PostsDetailsActivity extends AppCompatActivity implements OnMapRead
         //FIXME: can not find post
         placesClient.fetchPlace(request).addOnSuccessListener((fetchPlaceResponse -> {
             place = fetchPlaceResponse.getPlace();
-            Log.i("PostsDetailsActivity", "place found: " + place.toString());
+            Log.i(TAG, "place found: " + place.toString());
         })).addOnFailureListener(exception -> {
             if(exception instanceof ApiException){
                 ApiException apiException = (ApiException) exception;
-                Log.e("PostsDetailsActivity", "Place not found: " + apiException.getMessage());
+                Log.e(TAG, "Place not found: " + apiException.getMessage());
             }
         });
     }
@@ -150,7 +151,7 @@ public class PostsDetailsActivity extends AppCompatActivity implements OnMapRead
     public boolean onCreateOptionsMenu(Menu menu) {
         // return super.onCreateOptionsMenu(menu);
         // Inflate the menu; this adds items to the action bar.
-        Log.d("PostsDetailsActivity", "in inflating menu");
+        Log.d(TAG, "in inflating menu");
         getMenuInflater().inflate(R.menu.menu_back_button, menu);
         return true;
     }
@@ -160,7 +161,7 @@ public class PostsDetailsActivity extends AppCompatActivity implements OnMapRead
         // handle item selection
         switch (item.getItemId()) {
             case R.id.action_back:
-                Log.i("PostsDetailsActivity", "user taken back to home screen");
+                Log.i(TAG, "user taken back to home screen");
                 //go back to home screen
                 finish();
                 return true;
@@ -202,21 +203,21 @@ public class PostsDetailsActivity extends AppCompatActivity implements OnMapRead
         Geocoder location = new Geocoder(this);
         try {
             List<Address> response = location.getFromLocationName(placeID, 1);
-            Log.i("PostsDetailsActivity", "list from location name: " + response.toString());
+            Log.i(TAG, "list from location name: " + response.toString());
             if (response.size() == 1) {
                 setMvMap(response,googleMap);
             } else {
-                Log.i("PostsDetailsActivity", "no address found");
+                Log.i(TAG, "no address found");
             }
         } catch (IOException e) {
-            Log.i("PostsDetailsActivity", "error getting from location name");
+            Log.i(TAG, "error getting from location name");
         }
     }
 
     private void setMvMap(List<Address> response, GoogleMap googleMap){
         Address addy = response.get(0);
         LatLng position = new LatLng(addy.getLatitude(), addy.getLongitude());
-        Log.i("PostsDetailsActivity", "response: " + response.toString());
+        Log.i(TAG, "response: " + response.toString());
         String snip = "Address: " + addy.getAddressLine(0);
         googleMap.addMarker(new MarkerOptions().position(position).title(placeID).snippet(snip));
         LatLngBounds bounds = new LatLngBounds(position, position);

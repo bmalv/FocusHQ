@@ -23,6 +23,8 @@ import java.util.List;
 
 public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHolder>{
 
+    public static final String TAG = "ProfileAdapter";
+
     private Context context;
     private List<ParseUser> users;
 
@@ -63,7 +65,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
 
         @Override
         public void onClick(View v) {
-            Log.i("ProfileAdapter","profile was clicked");
+            Log.i(TAG,"profile was clicked");
             ParseUser author = users.get(0);
             Fragment fragment = new ProfileFragment(author);
             AppCompatActivity activity = (AppCompatActivity) v.getContext();
@@ -76,7 +78,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
             tvUsername.setText(user.getUsername());
             ParseFile profileImage = user.getParseFile("profileImage");
             if(profileImage != null){
-                Log.d("ProfileAdapter", "loaded profile pic");
+                Log.d(TAG, "loaded profile pic");
                 Glide.with(context).load(profileImage.getUrl()).circleCrop().into(ivProfileImage);
             }
         }

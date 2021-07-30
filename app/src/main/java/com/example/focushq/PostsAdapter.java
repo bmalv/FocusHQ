@@ -1,10 +1,7 @@
 package com.example.focushq;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.media.Image;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,14 +14,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.ReportFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.focushq.fragments.ReplyFragment;
-import com.example.focushq.fragments.SearchFragment;
 import com.parse.ParseFile;
 
 import org.parceler.Parcels;
@@ -34,9 +27,10 @@ import java.util.List;
 
 public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> {
 
+    public static final String TAG = "PostsAdapter";
+
     private Context context;
     private List<Post> posts;
-    private ReplyAdapter replyAdapter;
 
     //constructor
     public PostsAdapter(Context context, List<Post> posts){
@@ -107,20 +101,20 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
 
             ParseFile image = post.getImage();
             if (image != null) {
-                Log.d("PostsAdapter", "loaded post image");
+                Log.d(TAG, "loaded post image");
                 Glide.with(context).load(image.getUrl()).into(ivImage);
             }
 
             ParseFile profileImage = post.getProfileImage();
             if(profileImage != null){
-                Log.d("PostsAdapter", "loaded profile pic");
+                Log.d(TAG, "loaded profile pic");
                 Glide.with(context).load(profileImage.getUrl()).circleCrop().into(ivProfileImage);
             }
 
             ivLike.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.i("PostsAdapter", "like button clicked");
+                    Log.i(TAG, "like button clicked");
                     ivLike.setBackground(ContextCompat.getDrawable(context,R.drawable.ufi_heart_active));
                 }
             });
@@ -128,7 +122,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             ivReply.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.i("PostsAdapter", "reply button clicked");
+                    Log.i(TAG, "reply button clicked");
                     //go to a reply view
                     int pos = getAdapterPosition();
                     if(pos != RecyclerView.NO_POSITION){
@@ -153,7 +147,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
                 //serialize the movie using parceler, use its short name as a key
                 intent.putExtra(Post.class.getSimpleName(), Parcels.wrap(post));
                 //show the activity
-                Log.d("PostAdapter", "showing the activity!");
+                Log.d(TAG, "showing the activity!");
                 context.startActivity(intent);
             }
         }

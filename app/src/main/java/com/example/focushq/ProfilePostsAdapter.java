@@ -26,6 +26,8 @@ import java.util.List;
 
 public class ProfilePostsAdapter extends RecyclerView.Adapter<ProfilePostsAdapter.ViewHolder> {
 
+    public static final String TAG = "ProfilePostsAdapter";
+
     private Context context;
     private List<Post> postList;
 
@@ -66,7 +68,7 @@ public class ProfilePostsAdapter extends RecyclerView.Adapter<ProfilePostsAdapte
         public void bind(Post post) {
             ParseFile image = post.getImage();
             if(image != null){
-                Log.d("ProfilePostsAdapter", "loaded post image");
+                Log.d(TAG, "loaded post image");
                 Glide.with(context).load(image.getUrl()).into(ivPostImage);
             }
         }
@@ -81,7 +83,7 @@ public class ProfilePostsAdapter extends RecyclerView.Adapter<ProfilePostsAdapte
                 //serialize the movie using parceler, use its short name as a key
                 intent.putExtra(Post.class.getSimpleName(), Parcels.wrap(post));
                 //show the activity
-                Log.d("PostAdapter", "showing the activity!");
+                Log.d(TAG, "showing the activity!");
                 context.startActivity(intent);
             }
         }

@@ -44,7 +44,6 @@ public class ProfileFragment extends Fragment {
     public static final String TAG = "ProfileFragment";
 
     private RecyclerView rvPosts;
-   // private PostsAdapter adapter;
     private ProfilePostsAdapter profilePostsAdapter;
     private List<Post> postsList;
     private TextView tvUsername;
@@ -80,7 +79,6 @@ public class ProfileFragment extends Fragment {
         btnFollow = view.findViewById(R.id.btnFollow);
 
         postsList = new ArrayList<>();
-       // adapter = new PostsAdapter(getContext(), postsList);
         profilePostsAdapter = new ProfilePostsAdapter(getContext(),postsList);
 
         tvUsername.setText(user.getUsername());
@@ -147,9 +145,4 @@ public class ProfileFragment extends Fragment {
             }
         });
     }
-
-    public ParseUser getProfileUser(){
-        return user;
-    }
-
 }

@@ -1,13 +1,11 @@
 package com.example.focushq;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,12 +16,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.focushq.fragments.ReplyFragment;
-import com.parse.ParseQuery;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class RepliesActivity extends Fragment {
+
+    public static final String TAG = "RepliesActivity";
 
     private RecyclerView rvReplies;
     private ReplyAdapter replyAdapter;
@@ -54,7 +52,7 @@ public class RepliesActivity extends Fragment {
         ivReply = view.findViewById(R.id.ivReply);
 
         replyList = post.getReplies();
-        replyAdapter = new ReplyAdapter(getContext(),replyList,post);
+        replyAdapter = new ReplyAdapter(getContext(),replyList);
 
         rvReplies.setAdapter(replyAdapter);
         rvReplies.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -62,7 +60,7 @@ public class RepliesActivity extends Fragment {
         ivReply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i("RepliesActivity", "reply button clicked");
+                Log.i(TAG, "reply button clicked");
                 Fragment fragment = new ReplyFragment(post);
                 AppCompatActivity activity = (AppCompatActivity) view.getContext();
                 FragmentManager fragmentManager = activity.getSupportFragmentManager();
@@ -70,8 +68,7 @@ public class RepliesActivity extends Fragment {
             }
         });
 
-//        replyList.addAll(post.getReplies());
-        Log.i("RepliesActivity","update the reply adapter");
+        Log.i(TAG,"update the reply adapter");
         replyAdapter.notifyDataSetChanged();
     }
 }
