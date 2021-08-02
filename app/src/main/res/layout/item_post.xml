@@ -96,9 +96,10 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:layout_marginBottom="8dp"
+            android:textAlignment="viewStart"
             android:textColor="@color/black"
             android:textSize="14sp"
-            tools:text="this is my caption for this post!" />
+            tools:text="The EER is modern looking and a very aesthetic place to study! You can find empty classrooms or desks along the building to get work done. Would highly recommend!" />
 
         <View
             android:id="@+id/separator"

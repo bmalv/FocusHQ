@@ -29,6 +29,9 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -97,6 +100,7 @@ public class LoginActivity extends AppCompatActivity {
                 });
             }
         });
+        updateUsers();
     }
 
     public void queryUsers(){
@@ -119,6 +123,17 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void updateUsers(){
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        scheduler.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                Log.i(TAG,"updated user list!");
+                queryUsers();
+            }
+        },0,5, TimeUnit.MINUTES);
     }
 
     private void loginUser(String username, String password) {
