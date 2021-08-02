@@ -58,4 +58,14 @@
         android:layout_marginTop="10dp"
         android:background="@color/sage_green"
         android:layout_below="@+id/btnFollow"/>
+
+    <ImageButton
+        android:id="@+id/ivBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="false"
+        android:layout_alignParentTop="false"
+        android:backgroundTint="#FFFFFF"
+        android:src="?attr/actionModeCloseDrawable"
+        android:visibility="gone" />
 </RelativeLayout>

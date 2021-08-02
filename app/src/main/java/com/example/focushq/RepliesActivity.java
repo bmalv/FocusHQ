@@ -15,6 +15,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.focushq.fragments.PostsFragment;
 import com.example.focushq.fragments.ReplyFragment;
 
 import java.util.List;
@@ -28,6 +29,7 @@ public class RepliesActivity extends Fragment {
     private Post post;
     private List<String> replyList;
     private ImageButton ivReply;
+    private ImageButton ivClose;
 
     public RepliesActivity(){}
 
@@ -50,6 +52,7 @@ public class RepliesActivity extends Fragment {
 
         rvReplies = view.findViewById(R.id.rvReply);
         ivReply = view.findViewById(R.id.ivReply);
+        ivClose = view.findViewById(R.id.ivClose);
 
         replyList = post.getReplies();
         replyAdapter = new ReplyAdapter(getContext(),replyList);
@@ -62,6 +65,17 @@ public class RepliesActivity extends Fragment {
             public void onClick(View v) {
                 Log.i(TAG, "reply button clicked");
                 Fragment fragment = new ReplyFragment(post);
+                AppCompatActivity activity = (AppCompatActivity) view.getContext();
+                FragmentManager fragmentManager = activity.getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.flContainer,fragment).commit();
+            }
+        });
+
+        ivClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i(TAG,"close button clicked!");
+                Fragment fragment = new PostsFragment();
                 AppCompatActivity activity = (AppCompatActivity) view.getContext();
                 FragmentManager fragmentManager = activity.getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.flContainer,fragment).commit();

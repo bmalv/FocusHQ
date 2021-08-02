@@ -5,7 +5,9 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -26,6 +29,7 @@ import com.example.focushq.PostsAdapter;
 import com.example.focushq.ProfileAdapter;
 import com.example.focushq.ProfilePostsAdapter;
 import com.example.focushq.R;
+import com.example.focushq.RepliesActivity;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -50,6 +54,7 @@ public class ProfileFragment extends Fragment {
     private ImageView ivProfileImage;
     private Button btnFollow;
     private ParseUser user;
+    private ImageButton ivBack;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -77,6 +82,7 @@ public class ProfileFragment extends Fragment {
         tvUsername = view.findViewById(R.id.tvUsername);
         ivProfileImage = view.findViewById(R.id.ivProfileImage);
         btnFollow = view.findViewById(R.id.btnFollow);
+        ivBack = view.findViewById(R.id.ivBack);
 
         postsList = new ArrayList<>();
         profilePostsAdapter = new ProfilePostsAdapter(getContext(),postsList);
@@ -94,9 +100,11 @@ public class ProfileFragment extends Fragment {
         if(user == ParseUser.getCurrentUser()){
             //the user can not follow themselves
             btnFollow.setVisibility(View.GONE);
+            ivBack.setVisibility(View.GONE);
         }else{
             //the user can not follow themselves
             btnFollow.setVisibility(View.VISIBLE);
+            ivBack.setVisibility(View.VISIBLE);
             //first time clicking on this profile
             if(btnFollow.getText().equals("")){
                 btnFollow.setText("FOLLOW");
@@ -112,6 +120,17 @@ public class ProfileFragment extends Fragment {
                 }else{
                     btnFollow.setText("FOLLOW");
                 }
+            }
+        });
+
+        ivBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i(TAG,"back button clicked");
+                Fragment fragment = new SearchFragment();
+                AppCompatActivity activity = (AppCompatActivity) view.getContext();
+                FragmentManager fragmentManager = activity.getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.flContainer,fragment).commit();
             }
         });
 

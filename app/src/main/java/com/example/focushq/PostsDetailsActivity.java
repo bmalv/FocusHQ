@@ -101,7 +101,7 @@ public class PostsDetailsActivity extends AppCompatActivity implements OnMapRead
 
         placeID = tvLocationName.getText().toString();
         Log.i(TAG, "placeID before setting: " + placeID);
-     //   fetchPlace();
+      //  fetchPlace();
 
         ParseFile pic = post.getProfileImage();
         if (pic != null) {
@@ -202,6 +202,7 @@ public class PostsDetailsActivity extends AppCompatActivity implements OnMapRead
     public void onMapReady(GoogleMap googleMap) {
         Geocoder location = new Geocoder(this);
         try {
+            Log.i(TAG,"placeID: " + placeID);
             List<Address> response = location.getFromLocationName(placeID, 1);
             Log.i(TAG, "list from location name: " + response.toString());
             if (response.size() == 1) {
@@ -210,7 +211,7 @@ public class PostsDetailsActivity extends AppCompatActivity implements OnMapRead
                 Log.i(TAG, "no address found");
             }
         } catch (IOException e) {
-            Log.i(TAG, "error getting from location name");
+            Log.i(TAG, "error getting from location name: " + e.getLocalizedMessage());
         }
     }
 
