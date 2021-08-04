@@ -28,13 +28,19 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ViewHolder> 
     //post that is being replied to
     private Context context;
     private List<String> replyList;
+    private List<Reply> replies;
 
-    public ReplyAdapter(Context context, List<String> replyList){
+//    public ReplyAdapter(Context context, List<String> replyList){
+//        this.context = context;
+//        if(replyList == null){
+//            replyList = new ArrayList<>();
+//        }
+//        this.replyList = replyList;
+//    }
+
+    public ReplyAdapter(Context context, List<Reply> replies){
         this.context = context;
-        if(replyList == null){
-            replyList = new ArrayList<>();
-        }
-        this.replyList = replyList;
+        this.replies = replies;
     }
 
 
@@ -47,13 +53,15 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull ReplyAdapter.ViewHolder holder, int position) {
-        String reply = replyList.get(position);
+//        String reply = replyList.get(position);
+//        holder.bind(reply);
+        Reply reply = replies.get(position);
         holder.bind(reply);
     }
 
     @Override
     public int getItemCount() {
-        return replyList.size();
+        return replies.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -69,11 +77,20 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ViewHolder> 
             tvComment = itemView.findViewById(R.id.tvComment);
         }
 
-        public void bind(String reply) {
-            tvComment.setText(reply);
-            tvUsername.setText(ParseUser.getCurrentUser().getUsername());
-
-            ParseFile image = ParseUser.getCurrentUser().getParseFile("profileImage");
+        public void bind(Reply reply) {
+//            tvComment.setText(reply);
+//            //FIXME: get the user the reply belongs to
+//            tvUsername.setText(ParseUser.getCurrentUser().getUsername());
+//            ParseFile image = ParseUser.getCurrentUser().getParseFile("profileImage");
+//            if(image != null){
+//                Log.d("ReplyAdapter", "loaded profile pic");
+//                Glide.with(context).load(image.getUrl()).circleCrop().into(ivProfileImage);
+//            }
+            Log.i("ReplyAdapter" , "in the bind method");
+            tvComment.setText(reply.getReply());
+            ParseUser user = reply.getUser();
+            tvUsername.setText(user.getUsername());
+            ParseFile image = user.getParseFile("profileImage");
             if(image != null){
                 Log.d("ReplyAdapter", "loaded profile pic");
                 Glide.with(context).load(image.getUrl()).circleCrop().into(ivProfileImage);

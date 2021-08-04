@@ -59,6 +59,14 @@
             android:layout_marginEnd="5dp"
             app:icon="@drawable/ic_search" />
 
+        <View
+            android:id="@+id/separator"
+            android:layout_width="match_parent"
+            android:layout_height="2dip"
+            android:layout_marginTop="10dp"
+            android:background="@color/sage_green"
+            android:layout_below="@+id/btnLocationSearch"/>
+
     </RelativeLayout>
 
 
@@ -66,6 +74,6 @@
         android:id="@+id/rvResults"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="90dp" />
+        android:layout_marginTop="110dp" />
 
 </FrameLayout>

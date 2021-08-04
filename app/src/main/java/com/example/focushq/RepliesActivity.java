@@ -17,7 +17,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.focushq.fragments.PostsFragment;
 import com.example.focushq.fragments.ReplyFragment;
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RepliesActivity extends Fragment {
@@ -27,7 +31,7 @@ public class RepliesActivity extends Fragment {
     private RecyclerView rvReplies;
     private ReplyAdapter replyAdapter;
     private Post post;
-    private List<String> replyList;
+    private List<Reply> replies;
     private ImageButton ivReply;
     private ImageButton ivClose;
 
@@ -54,8 +58,8 @@ public class RepliesActivity extends Fragment {
         ivReply = view.findViewById(R.id.ivReply);
         ivClose = view.findViewById(R.id.ivClose);
 
-        replyList = post.getReplies();
-        replyAdapter = new ReplyAdapter(getContext(),replyList);
+        replies = new ArrayList<>();
+        replyAdapter = new ReplyAdapter(getContext(),replies);
 
         rvReplies.setAdapter(replyAdapter);
         rvReplies.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -82,7 +86,29 @@ public class RepliesActivity extends Fragment {
             }
         });
 
-        Log.i(TAG,"update the reply adapter");
-        replyAdapter.notifyDataSetChanged();
+        queryReplies();
+    }
+
+    public void queryReplies(){
+        ParseQuery<Reply> query = ParseQuery.getQuery(Reply.class);
+        query.include(Reply.USER_KEY);
+        query.whereEqualTo(Reply.POST_KEY,post);
+        query.setLimit(20);
+        query.findInBackground(new FindCallback<Reply>() {
+            @Override
+            public void done(List<Reply> objects, ParseException e) {
+                if(e != null){
+                    Log.e(TAG, "Issue with getting replies", e);
+                    return;
+                }
+
+                for(Reply reply: objects){
+                    Log.i(TAG,"reply: " + reply.getReply());
+                }
+
+                replies.addAll(objects);
+                replyAdapter.notifyDataSetChanged();
+            }
+        });
     }
 }

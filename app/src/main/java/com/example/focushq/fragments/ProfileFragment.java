@@ -109,19 +109,26 @@ public class ProfileFragment extends Fragment {
             if(btnFollow.getText().equals("")){
                 btnFollow.setText("FOLLOW");
             }
-        }
 
-        btnFollow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(btnFollow.getText().equals("FOLLOW")){
-                    btnFollow.setText("UNFOLLOW");
-                    btnFollow.setBackgroundColor(Color.GRAY);
-                }else{
-                    btnFollow.setText("FOLLOW");
+            btnFollow.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(btnFollow.getText().equals("FOLLOW")){
+                        btnFollow.setText("UNFOLLOW");
+                        btnFollow.setBackgroundColor(Color.GRAY);
+                        Log.i(TAG,"user: " + ParseUser.getCurrentUser() + " now following: " + user.getUsername());
+                        //have the current user follow the other user
+//                        List<ParseUser> list = ParseUser.getCurrentUser().getList("following");
+//                        list.add(user);
+//                        Log.i(TAG, "following list: " + list.toString());
+//                        ParseUser.getCurrentUser().put("following",list);
+                    }else{
+                        btnFollow.setText("FOLLOW");
+                    }
                 }
-            }
-        });
+            });
+
+        }
 
         ivBack.setOnClickListener(new View.OnClickListener() {
             @Override

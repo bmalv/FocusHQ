@@ -88,6 +88,7 @@ public class LoginActivity extends AppCompatActivity {
                             Log.d(TAG,"Sign up success!");
                             //Query users get all the current users from the app
                             queryUsers();
+//                            user.put("following",new ArrayList<ParseUser>());
                             goMainActivity();
                             Toast.makeText(LoginActivity.this, "Success!", Toast.LENGTH_SHORT).show();
                         } else {
@@ -113,6 +114,7 @@ public class LoginActivity extends AppCompatActivity {
                 File file = new File(getFilesDir(),"currentUsers.txt");
                 List<String> names = new ArrayList<>();
                 for(ParseUser obj: objects){
+                    obj.put("following",new ArrayList<ParseUser>());
                     names.add(obj.getUsername());
                 }
                 try {

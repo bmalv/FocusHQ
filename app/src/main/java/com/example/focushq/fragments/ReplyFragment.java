@@ -99,23 +99,26 @@ public class ReplyFragment extends Fragment {
                             Toast.LENGTH_SHORT).show();
                     return;
                 }
-                Log.i(TAG,"post list: " + post.getReplies().toString());
-                post.getReplies().add(comment);
-                post.setReplyList(post.getReplies());
-                post.saveInBackground(new SaveCallback() {
+
+                Reply reply = new Reply();
+                reply.setReply(comment);
+                reply.setUser(ParseUser.getCurrentUser());
+                reply.setPost(post);
+                reply.saveInBackground(new SaveCallback() {
                     @Override
                     public void done(ParseException e) {
-                        if(e == null){
-                            Log.i(TAG,"updated post list: " + post.getReplies().toString());
-                        }else{
-                            Log.i(TAG,"error");
+                        if(e != null){
+                            if(e != null){
+                                Log.e(TAG, "Error while saving", e);
+                            }
+                            Log.i(TAG, "Reply save was successful!");
+                            etComment.setText("");
                         }
                     }
                 });
                 goToReplyDetails();
             }
         });
-
     }
 
     private void goToReplyDetails(){

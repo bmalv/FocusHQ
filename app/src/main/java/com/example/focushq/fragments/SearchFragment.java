@@ -66,6 +66,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Response;
 
@@ -257,34 +260,7 @@ public class SearchFragment extends Fragment {
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(@NonNull Place place) {
-                // TODO: Get info about the selected place.
                 Log.i(TAG, "Place: " + place.getName() + " place ID: " + place.getId());
-                FetchPlaceRequest request = new FetchPlaceRequest() {
-                    @NonNull
-                    @Override
-                    public String getPlaceId() {
-                        return place.getId();
-                    }
-
-                    @NonNull
-                    @Override
-                    public List<Place.Field> getPlaceFields() {
-                        return null;
-                    }
-
-                    @Nullable
-                    @Override
-                    public AutocompleteSessionToken getSessionToken() {
-                        return null;
-                    }
-
-                    @Nullable
-                    @Override
-                    public CancellationToken getCancellationToken() {
-                        return null;
-                    }
-                };
-
                 locationName = place.getName();
                 Log.i(TAG, "set location name: " + locationName);
                 rvResults.setAdapter(postsAdapter);
